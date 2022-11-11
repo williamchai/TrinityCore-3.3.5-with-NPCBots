@@ -3456,7 +3456,7 @@ bool bot_ai::CanBotAttack(Unit const* target, int8 byspell) const
         (target->IsAlive() && target->IsVisible() && me->IsValidAttackTarget(target) &&
         target->isTargetableForAttack(false) && !IsInBotParty(target) &&
         ((me->CanSeeOrDetect(target) && target->InSamePhase(me)) || CanSeeEveryone()) &&
-        (!master->IsAlive() || target->IsControlledByPlayer() || master->GetDistance(target) <= foldist) &&//if master is killed pursue to the end
+        (!master->IsAlive() || target->IsControlledByPlayer() || (followdist > 0 && master->GetDistance(target) <= foldist)) &&//if master is killed pursue to the end
         (target->IsHostileTo(master) || target->IsHostileTo(me) ||//if master is controlled
         (target->GetReactionTo(me) < REP_FRIENDLY && (master->IsInCombat() || target->IsInCombat()))) &&
         (byspell == -1 || !target->IsTotem()) &&
@@ -3637,6 +3637,8 @@ Unit* bot_ai::_getTarget(bool byspell, bool ranged, bool &reset) const
             static constexpr std::array BoneSpikeIds = { CREATURE_ICC_BONE_SPIKE1, CREATURE_ICC_BONE_SPIKE2, CREATURE_ICC_BONE_SPIKE3 };
 
             auto boneSpikeCheck = [=, mydist = 50.f](Unit const* unit) mutable {
+                if (!unit->IsAlive())
+                    return false;
                 for (uint32 bsId : BoneSpikeIds) {
                     if (unit->GetEntry() == bsId)  {
                         if (HasRole(BOT_ROLE_RANGED))
@@ -6007,7 +6009,7 @@ void bot_ai::_OnHealthUpdate() const
     //TC_LOG_ERROR("entities.player", "_OnHealthUpdate(): updating bot %s", me->GetName().c_str());
     bool fullhp = me->GetHealth() == me->GetMaxHealth();
     float pct = fullhp ? 100.f : me->GetHealthPct(); // needs for regeneration
-    uint32 m_basehp = _classinfo->basehealth;
+    uint32 m_basehp = uint32(_classinfo->basehealth * BotMgr::GetBotHPMod());
     //TC_LOG_ERROR("entities.player", "class base health: %u", m_basehp);
     me->SetCreateHealth(m_basehp);
 
@@ -6021,7 +6023,7 @@ void bot_ai::_OnHealthUpdate() const
     //hp_add += IAmFree() ? mylevel * 375.f : 0; //+30000/+0 hp at 80
     hp_add += _getTotalBotStat(BOT_STAT_MOD_HEALTH);
     //TC_LOG_ERROR("entities.player", "health to add after stam mod: %i", hp_add);
-    uint32 m_totalhp = m_basehp + int32(hp_add); //m_totalhp = uint32(float(m_basehp + hp_add) * stammod);
+    uint32 m_totalhp = m_basehp + int32(hp_add * BotMgr::GetBotHPMod()); //m_totalhp = uint32(float(m_basehp + hp_add) * stammod);
     //TC_LOG_ERROR("entities.player", "total base health: %u", m_totalhp);
 
     //hp bonuses
@@ -15246,7 +15248,7 @@ bool bot_ai::GlobalUpdate(uint32 diff)
 
             if (_lastZoneId != newzone)
                 _OnZoneUpdate(newzone, newarea); // also updates area
-            else if (_lastAreaId != newarea)
+            else// if (_lastAreaId != newarea)
                 _OnAreaUpdate(newarea);
 
             if (_wmoAreaUpdateTimer <= diff)
