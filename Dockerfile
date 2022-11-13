@@ -33,19 +33,8 @@ RUN set -e && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/
 #ADD ./tc_data.7z /root/tc_data.7z
 
 Add https://github.com/TrinityCore/TrinityCore/releases/download/TDB335.22101/TDB_full_world_335.22101_2022_10_17.7z /server
-
-#
-# Optional data archive containing data folders: dbc, maps [, vmaps, mmaps]
-# You have to uncomment 3 (three) rows below to use it without errors:
-#  1) ADD ./tc_data.7z /server/bin/tc_data.7z
-#  2) mv /root/tc_data.7z . && 7zr x tc_data.7z &&\
-#  3) rm -f tc_data* &&\
-#
-#ADD ./tc_data.7z /root/tc_data.7z /server
  
-COPY . ~/TC
-RUN cd ~/TC &&\
- ls -la .
+RUN pwd && ls -la .
 #  mkdir build && cd build &&\
 #  cmake ../ -DWITH_COREDEBUG=0 -DTOOLS=$tools -DCMAKE_BUILD_TYPE=$buildtype -DCMAKE_INSTALL_PREFIX=/server &&\
 #  make -j $(nproc) install
