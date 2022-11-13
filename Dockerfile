@@ -36,7 +36,7 @@ Add https://github.com/TrinityCore/TrinityCore/releases/download/TDB335.22101/TD
 
 WORKDIR /TC
 COPY . /TC
-COPY .git /TC/.git
+COPY ./.git /TC/.git
 
 RUN pwd && ls -la . &&\
  mkdir build && cd build &&\
