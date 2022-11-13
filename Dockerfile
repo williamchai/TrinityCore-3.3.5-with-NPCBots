@@ -37,7 +37,7 @@ Add https://github.com/TrinityCore/TrinityCore/releases/download/TDB335.22101/TD
 WORKDIR ~/TC
 COPY . ~/TC
 
-RUN pwd && ls -la .
+RUN pwd && ls -la . &&\
  mkdir build && cd build &&\
  cmake ../ -DWITH_COREDEBUG=0 -DTOOLS=$tools -DCMAKE_BUILD_TYPE=$buildtype -DCMAKE_INSTALL_PREFIX=/server &&\
  make -j $(nproc)
