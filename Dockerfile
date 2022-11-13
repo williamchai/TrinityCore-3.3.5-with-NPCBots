@@ -20,9 +20,9 @@ EXPOSE 8085
 
 RUN set -e && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone &&\
  apt-get update &&\
- apt-get install -y git cmake make gcc g++ mysql-server libmysqlclient-dev\
- libreadline-dev libncurses-dev libboost-all-dev libssl-dev libbz2-dev p7zip wget &&\
- c++ --version
+#  apt-get install -y git cmake make gcc g++ mysql-server libmysqlclient-dev\
+#  libreadline-dev libncurses-dev libboost-all-dev libssl-dev libbz2-dev p7zip wget &&\
+ apt-get install -yq libboost-all-dev g++-8
 
 # Optional data archive containing data folders: dbc, maps [, vmaps, mmaps]
 # You have to uncomment 3 (three) rows below to use it without errors:
