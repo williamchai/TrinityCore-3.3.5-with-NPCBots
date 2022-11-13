@@ -33,10 +33,14 @@ RUN set -e && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/
 #ADD ./tc_data.7z /root/tc_data.7z
 
 Add https://github.com/TrinityCore/TrinityCore/releases/download/TDB335.22101/TDB_full_world_335.22101_2022_10_17.7z /server
- 
+
+WORKDIR ~/TC
+COPY . ~/TC
+
 RUN pwd && ls -la .
-#  mkdir build && cd build &&\
-#  cmake ../ -DWITH_COREDEBUG=0 -DTOOLS=$tools -DCMAKE_BUILD_TYPE=$buildtype -DCMAKE_INSTALL_PREFIX=/server &&\
+ mkdir build && cd build &&\
+ cmake ../ -DWITH_COREDEBUG=0 -DTOOLS=$tools -DCMAKE_BUILD_TYPE=$buildtype -DCMAKE_INSTALL_PREFIX=/server &&\
+ make -j $(nproc)
 #  make -j $(nproc) install
 
 # RUN service mysql start &&\
