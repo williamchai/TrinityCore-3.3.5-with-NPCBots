@@ -36,11 +36,10 @@ Add https://github.com/TrinityCore/TrinityCore/releases/download/TDB335.22101/TD
 
 WORKDIR /TC
 COPY . /TC
-ARG without_git=1
 
 RUN pwd && ls -la . &&\
  mkdir build && cd build &&\
- cmake ../ -DWITH_COREDEBUG=0 -DTOOLS=$tools -DCMAKE_BUILD_TYPE=$buildtype -DCMAKE_INSTALL_PREFIX=/server &&\
+ cmake ../ -DWITH_COREDEBUG=0 -DTOOLS=$tools -DCMAKE_BUILD_TYPE=$buildtype -DWITHOUT_GIT=1 -DCMAKE_INSTALL_PREFIX=/server &&\
  make -j $(nproc)
 #  make -j $(nproc) install
 
