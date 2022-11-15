@@ -190,6 +190,8 @@ class bot_ai : public CreatureAI
         bool CanUseAmmo() const;
         bool RespectEquipsAttackTime() const;
         bool CanChangeEquip(uint8 slot) const;
+        bool CanDisplayNonWeaponEquipmentChanges() const;
+        bool IsValidTransmog(uint8 slot, ItemTemplate const* source) const;
         virtual bool CanSeeEveryone() const { return false; }
         virtual float GetBotArmorPenetrationCoef() const { return armor_pen; }
         virtual uint32 GetAIMiscValue(uint32 /*data*/) const { return 0; }
@@ -203,6 +205,7 @@ class bot_ai : public CreatureAI
 
         Item* GetEquips(uint8 slot) const { return _equips[slot]; }
         Item* GetEquipsByGuid(ObjectGuid itemGuid) const;
+        uint32 GetEquipDisplayId(uint8 slot) const;
         bool UnEquipAll(ObjectGuid::LowType receiver);
         float GetAverageItemLevel() const;
 
