@@ -22,7 +22,7 @@ jobs:
       uses: docker/metadata-action@v4
       with:
         images: ycmk/TrinityCore-3.3.5-with-NPCBots
-        tags:
+        tags: |
           type=ref,event=branch
           type=ref,event=pr
           type=sha
@@ -54,7 +54,7 @@ jobs:
       uses: docker/metadata-action@v4
       with:
         images: ycmk/TrinityCore-3.3.5-with-NPCBots
-        tags:
+        tags: |
           type=ref,event=branch
           type=ref,event=pr
           type=sha
