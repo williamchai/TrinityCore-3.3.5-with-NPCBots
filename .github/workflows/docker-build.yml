@@ -17,14 +17,21 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_HUB_USER }}
         password: ${{ secrets.DOCKER_HUB_TOKEN }}
-    - uses: docker/metadata-action@v4
+    - name: Docker metadata
+      id: meta
+      uses: docker/metadata-action@v4
       with:
         images: ycmk/TrinityCore-3.3.5-with-NPCBots
+        tags:
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha
     - uses: docker/build-push-action@v3.2.0
       with:
         context: .
-        push: ${{ github.event_name != 'pull_request' }}
+        push: true
         tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -42,14 +49,21 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_HUB_USER }}
         password: ${{ secrets.DOCKER_HUB_TOKEN }}
-    - uses: docker/metadata-action@v4
+    - name: Docker metadata
+      id: meta
+      uses: docker/metadata-action@v4
       with:
         images: ycmk/TrinityCore-3.3.5-with-NPCBots
+        tags:
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha
     - uses: docker/build-push-action@v3.2.0
       with:
         context: .
-        push: ${{ github.event_name != 'pull_request' }}
+        push: true
         platforms: linux/arm64
         tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
