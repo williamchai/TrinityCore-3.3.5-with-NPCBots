@@ -31,12 +31,12 @@ RUN set -e && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/
 #
 #ADD ./tc_data.7z /root/tc_data.7z
 
-Add https://github.com/TrinityCore/TrinityCore/releases/download/TDB335.22101/TDB_full_world_335.22101_2022_10_17.7z /server
+ADD https://github.com/TrinityCore/TrinityCore/releases/download/TDB335.22101/TDB_full_world_335.22101_2022_10_17.7z /server/TDB.7z
 
 WORKDIR /TC
 COPY . /TC
 
-RUN pwd && ls -la . && mkdir -p /server/bin &&\
+RUN pwd && ls -la . &&\
  mkdir -p build && cd build &&\
  cmake ../ -DWITH_COREDEBUG=0 -DTOOLS=$tools -DCMAKE_BUILD_TYPE=$buildtype -DCMAKE_INSTALL_PREFIX=/server &&\
  make -j $(nproc) &&\
@@ -55,7 +55,7 @@ RUN service mysql start &&\
  cp worldserver.conf.dist worldserver.conf && cp authserver.conf.dist authserver.conf
 
 RUN cd /server/bin &&\
- mv ../TDB*.7z . && 7zr x TDB*.7z && mv TDB_full*.sql TDB.sql &&\
+ mv ../TDB.7z . && 7zr x TDB.7z && mv TDB_full*.sql TDB.sql &&\
 # mv /root/tc_data.7z . && 7zr x tc_data.7z &&\
  mysql -uroot < /TC/sql/create/create_mysql.sql &&\
  mysql -utrinity -ptrinity auth < /TC/sql/base/auth_database.sql &&\
