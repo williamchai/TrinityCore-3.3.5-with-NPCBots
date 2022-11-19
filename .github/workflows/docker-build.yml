@@ -25,10 +25,11 @@ jobs:
         tags: |
           type=ref,event=branch
           type=ref,event=pr
-          type=sha
+          type=sha,format=long
     - uses: docker/build-push-action@v3.2.0
       with:
         context: .
+        platforms: linux/amd64
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
@@ -57,12 +58,12 @@ jobs:
         tags: |
           type=ref,event=branch
           type=ref,event=pr
-          type=sha
+          type=sha,format=long
     - uses: docker/build-push-action@v3.2.0
       with:
         context: .
-        push: true
         platforms: linux/arm64
+        push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
