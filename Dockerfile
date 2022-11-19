@@ -57,11 +57,11 @@ RUN service mysql start &&\
 RUN cd /server/bin &&\
  mv ../TDB.7z . && 7zr x TDB.7z && mv TDB_full*.sql TDB.sql &&\
 # mv /root/tc_data.7z . && 7zr x tc_data.7z &&\
- mysql -uroot < /TC/sql/create/create_mysql.sql &&\
- mysql -utrinity -ptrinity auth < /TC/sql/base/auth_database.sql &&\
- mysql -utrinity -ptrinity characters < /TC/sql/base/characters_database.sql &&\
- mysql -utrinity -ptrinity world < TDB.sql &&\
- rm -f TDB* &&\
+ #mysql -uroot < /TC/sql/create/create_mysql.sql &&\
+ #mysql -utrinity -ptrinity auth < /TC/sql/base/auth_database.sql &&\
+ #mysql -utrinity -ptrinity characters < /TC/sql/base/characters_database.sql &&\
+ #mysql -utrinity -ptrinity world < TDB.sql &&\
+ #rm -f TDB* &&\
  rm -rf /TC/* &&\
 # rm -f tc_data* &&\
  apt-get remove -y git cmake make gcc g++ p7zip wget &&\
