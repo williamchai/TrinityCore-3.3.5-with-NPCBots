@@ -39,7 +39,7 @@ COPY . /TC
 RUN pwd && ls -la . &&\
  mkdir build && cd build &&\
  cmake ../ -DWITH_COREDEBUG=0 -DTOOLS=$tools -DCMAKE_BUILD_TYPE=$buildtype -DWITHOUT_GIT=1 -DCMAKE_INSTALL_PREFIX=/server &&\
- make -j $(nproc)
+ make -j $(nproc) &&\
  make -j $(nproc) install
 
 RUN service mysql start &&\
