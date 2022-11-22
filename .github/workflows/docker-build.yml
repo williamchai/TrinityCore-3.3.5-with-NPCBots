@@ -25,7 +25,8 @@ jobs:
         tags: |
           type=ref,event=branch
           type=ref,event=pr
-          type=edge
+          type=raw,value=latest,enable=${{is_default_branch}}
+          type=raw,value=${{sha}}
     - uses: docker/build-push-action@v3.2.0
       with:
         context: .
@@ -58,7 +59,8 @@ jobs:
         tags: |
           type=ref,event=branch
           type=ref,event=pr
-          type=edge
+          type=raw,value=latest,enable=${{is_default_branch}}
+          type=raw,value=${{sha}}
     - uses: docker/build-push-action@v3.2.0
       with:
         context: .
