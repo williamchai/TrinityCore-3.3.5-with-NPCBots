@@ -42,8 +42,7 @@ RUN pwd && ls -la . &&\
  make -j $(nproc) &&\
  make -j $(nproc) install
 
-RUN service mysql start &&\
- cd /TC/sql/Bots &&\
+RUN cd /TC/sql/Bots &&\
  bash merge_sqls_auth_unix.sh &&\
  bash merge_sqls_characters_unix.sh &&\
  bash merge_sqls_world_unix.sh &&\
@@ -52,18 +51,18 @@ RUN service mysql start &&\
  mv ALL_world.sql ../updates/world/3.3.5 &&\
  cd /TC && mv sql .. && rm -rf * && mv ../sql . &&\
  cd /server/etc &&\
- cp worldserver.conf.dist worldserver.conf && cp authserver.conf.dist authserver.conf
+ mv worldserver.conf.dist worldserver.conf && mv authserver.conf.dist authserver.conf
 
+# Only create database if not found
+WORKDIR /server
 RUN cd /server/bin &&\
- mv ../TDB.7z . && 7zr x TDB.7z && mv TDB_full*.sql TDB.sql &&\
+ mv ../TDB.7z . && 7zr x TDB.7z && rm TDB.7z && mv TDB_full*.sql TDB.sql &&\
 # mv /root/tc_data.7z . && 7zr x tc_data.7z &&\
- #mysql -uroot < /TC/sql/create/create_mysql.sql &&\
- #mysql -utrinity -ptrinity auth < /TC/sql/base/auth_database.sql &&\
- #mysql -utrinity -ptrinity characters < /TC/sql/base/characters_database.sql &&\
- #mysql -utrinity -ptrinity world < TDB.sql &&\
- #rm -f TDB* &&\
- rm -rf /TC/* &&\
+ service mysql start &&\
 # rm -f tc_data* &&\
- apt-get remove -y git cmake make gcc g++ p7zip wget &&\
+ apt-get remove -y git cmake make gcc g++\
+ libreadline-dev libncurses-dev libboost-all-dev libssl-dev libbz2-dev p7zip wget &&\
  apt-get -y autoremove && apt-get clean &&\
  ./authserver --version && ./worldserver --version
+
+ENTRYPOINT ["bash", "start.sh"]
