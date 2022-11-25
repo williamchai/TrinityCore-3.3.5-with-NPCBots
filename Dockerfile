@@ -49,7 +49,7 @@ RUN cd /TC/sql/Bots &&\
  mv ALL_auth.sql ../updates/auth/3.3.5 &&\
  mv ALL_characters.sql ../updates/characters/3.3.5 &&\
  mv ALL_world.sql ../updates/world/3.3.5 &&\
- cd /TC && mv sql .. && rm -rf * && mv ../sql . &&\
+ cd /TC && mv sql .. && mv start.sh / && rm -rf * && mv ../sql . &&\
  cd /server/etc &&\
  mv worldserver.conf.dist worldserver.conf && mv authserver.conf.dist authserver.conf
 
@@ -65,4 +65,4 @@ RUN cd /server/bin &&\
  apt-get -y autoremove && apt-get clean &&\
  ./authserver --version && ./worldserver --version
 
-ENTRYPOINT ["bash", "start.sh"]
+ENTRYPOINT ["bash", "/start.sh"]
