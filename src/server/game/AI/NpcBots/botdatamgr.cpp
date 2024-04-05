@@ -779,7 +779,7 @@ void BotDataMgr::LoadNpcBots(bool spawn)
                 continue;
             }
 
-            if (_botsTransmogData.count(entry) == 0)
+            if (!_botsTransmogData.contains(entry))
                 _botsTransmogData[entry] = new NpcBotTransmogData();
 
             //load data
@@ -1287,7 +1287,7 @@ void BotDataMgr::LoadWanderMap(bool reload)
 
     std::set<WanderNode const*> tops;
     WanderNode::DoForAllWPs([&](WanderNode const* wp) {
-        if (tops.count(wp) == 0u && wp->GetLinks().size() == 1u)
+        if (!tops.contains(wp) && wp->GetLinks().size() == 1u)
         {
             TC_LOG_DEBUG("server.loading", "Node {} ('{}') has single connection!", wp->GetWPId(), wp->GetName());
             WanderNode const* tn = wp->GetLinks().front();
@@ -1612,7 +1612,7 @@ void BotDataMgr::CreateWanderingBotsSortedGear()
         if (skip)
             continue;
 
-        if (!!disabled_item_ids.count(proto.ItemId))
+        if (disabled_item_ids.contains(proto.ItemId))
         {
             //TC_LOG_INFO("server.loading", "Item {} is disabled...", proto.ItemId);
             continue;
