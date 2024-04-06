@@ -513,7 +513,7 @@ Spell::Spell(WorldObject* caster, SpellInfo const* info, TriggerCastFlags trigge
 /*
 m_spellInfo(sSpellMgr->GetSpellForDifficultyFromSpell(info, caster)),
 */
-m_spellInfo(sSpellMgr->GetSpellForDifficultyFromSpell(info, caster)->TryGetSpellInfoOverride(caster)),
+m_spellInfo((caster->IsNPCBot() ? info : sSpellMgr->GetSpellForDifficultyFromSpell(info, caster))->TryGetSpellInfoOverride(caster)),
 //end npcbot
 m_caster((info->HasAttribute(SPELL_ATTR6_CAST_BY_CHARMER) && caster->GetCharmerOrOwner()) ? caster->GetCharmerOrOwner() : caster)
 , m_spellValue(new SpellValue(m_spellInfo)), _spellEvent(nullptr)
