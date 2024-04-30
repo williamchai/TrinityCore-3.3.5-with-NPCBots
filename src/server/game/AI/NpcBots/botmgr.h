@@ -224,6 +224,7 @@ class TC_GAME_API BotMgr
         static uint8 GetBotPlayerRace(uint8 bot_class, uint8 bot_race);
         static uint8 GetBotPlayerClass(Creature const* bot);
         static uint8 GetBotPlayerRace(Creature const* bot);
+        static uint8 GetBotEquipmentClass(uint8 bot_class);
 
         std::string GetTargetIconString(uint8 icon) const;
 
