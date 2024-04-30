@@ -2000,7 +2000,7 @@ uint8 BotMgr::GetBotEquipmentClass(uint8 bot_class)
             case BOT_CLASS_CRYPT_LORD:
                 return BOT_CLASS_WARRIOR;
             default:
-                TC_LOG_ERROR("npcbots", "GetPlayerClass: unknown Ex bot class {}!", bot_class);
+                TC_LOG_ERROR("npcbots", "GetBotEquipmentClass: unknown Ex bot class {}!", bot_class);
                 return BOT_CLASS_PALADIN;
         }
     }
