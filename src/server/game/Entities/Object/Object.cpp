@@ -1655,9 +1655,26 @@ bool WorldObject::CanDetect(WorldObject const* obj, bool implicitDetect, bool ch
 {
     WorldObject const* seer = this;
 
-    //npcbot: master's invisibility should not affect bots' sight
-    if (!IsNPCBot())
+    //npcbot: master's sight only partially affects bots
+    if (IsNPCBot())
+    {
+        Unit const* owner = ToCreature()->GetBotOwner();
+        if (!owner)
+            owner = ToUnit();
+
+        if (!obj->IsAlwaysDetectableFor(seer) && !obj->IsAlwaysDetectableFor(owner) && !implicitDetect)
+        {
+            if (!seer->CanDetectInvisibilityOf(obj) && !(owner->IsInWorld() && owner->GetMap()->IsDungeon() && owner->CanDetectInvisibilityOf(obj)))
+                return false;
+
+            if (!seer->CanDetectStealthOf(obj, checkAlert))
+                return false;
+        }
+
+        return true;
+    }
     //end npcbot
+
     // Pets don't have detection, they use the detection of their masters
     if (Unit const* thisUnit = ToUnit())
     {
