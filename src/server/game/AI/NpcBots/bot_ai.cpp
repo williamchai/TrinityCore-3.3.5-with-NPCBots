@@ -470,7 +470,7 @@ void bot_ai::CheckOwnerExpiry()
     if (!BotMgr::GetOwnershipExpireTime())
         return; //disabled
 
-    if (IsTempBot())
+    if (IsTempBot() || !IAmFree())
         return;
 
     NpcBotData const* npcBotData = BotDataMgr::SelectNpcBotData(me->GetEntry());
@@ -516,7 +516,7 @@ void bot_ai::CheckOwnerExpiry()
         //  "FROM item_instance WHERE guid IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", CONNECTION_SYNCH
 
         for (uint8 i = 0; i != BOT_INVENTORY_SIZE; ++i)
-            stmt->setUInt32(i, npcBotData->equips[i]);
+            stmt->setUInt32(i, npcBotData->equips[i] ? npcBotData->equips[i] : std::numeric_limits<uint32>::max());
 
         PreparedQueryResult iiresult = CharacterDatabase.Query(stmt);
         if (iiresult)
@@ -528,9 +528,21 @@ void bot_ai::CheckOwnerExpiry()
                 Field* fields2 = iiresult->Fetch();
                 uint32 itemGuidLow = fields2[11].GetUInt32();
                 uint32 itemId = fields2[12].GetUInt32();
-                Item* item = new Item;
-                ASSERT(item->LoadFromDB(itemGuidLow, ownerGuid, fields2, itemId));
-                items.push_back(item);
+                uint8 item_idx = std::numeric_limits<uint8>::max();
+
+                for (uint8 i = 0; i != BOT_INVENTORY_SIZE; ++i)
+                {
+                    if (_equips[i] && _equips[i]->GetEntry() == itemId)
+                    {
+                        item_idx = i;
+                        break;
+                    }
+                }
+                if (item_idx >= BOT_INVENTORY_SIZE)
+                    TC_LOG_ERROR("npcbots", "bot_ai::CheckOwnerExpiry(): item id {} guid {} not found in bot's inventory!\n{}", itemId, itemGuidLow, me->GetGUID().ToString());
+
+                items.push_back(_equips[item_idx]);
+                _removeEquipment(item_idx);
 
             } while (iiresult->NextRow());
 
@@ -12357,6 +12369,28 @@ bool bot_ai::_canEquip(ItemTemplate const* newProto, uint8 slot, bool ignoreItem
     return false;
 }
 
+void bot_ai::_removeEquipment(uint8 slot)
+{
+    Item* item = _equips[slot];
+    if (!item)
+        return; //already unequipped
+
+    _usableItemSlotsMask &= ~(1ul << slot);
+
+    RemoveItemBonuses(slot);
+    ApplyItemSetBonuses(item, false);
+
+    if (slot == BOT_SLOT_OFFHAND)
+    {
+        if (me->CanDualWield())
+            me->SetCanDualWield(false);
+        if (!(me->GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_NO_BLOCK))
+            const_cast<CreatureTemplate*>(me->GetCreatureTemplate())->flags_extra |= CREATURE_FLAG_EXTRA_NO_BLOCK;
+    }
+
+    _equips[slot] = nullptr;
+}
+
 bool bot_ai::_unequip(uint8 slot, ObjectGuid receiver)
 {
     EquipmentInfo const* einfo = BotDataMgr::GetBotEquipmentInfo(me->GetEntry());
@@ -12368,10 +12402,7 @@ bool bot_ai::_unequip(uint8 slot, ObjectGuid receiver)
 
     uint32 itemId = item->GetEntry();
 
-    _usableItemSlotsMask &= ~(1ul << slot);
-
-    RemoveItemBonuses(slot);
-    ApplyItemSetBonuses(item, false);
+    _removeEquipment(slot);
 
     //hand old weapon to master
     if (receiver && (slot > BOT_SLOT_RANGED || einfo->ItemEntry[slot] != itemId))
@@ -12433,16 +12464,6 @@ bool bot_ai::_unequip(uint8 slot, ObjectGuid receiver)
     }
 
     _updateEquips(slot, nullptr);
-
-    //offhand check
-    if (slot == BOT_SLOT_OFFHAND)
-    {
-        if (me->CanDualWield())
-            me->SetCanDualWield(false);
-        if (!(me->GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_NO_BLOCK))
-            const_cast<CreatureTemplate*>(me->GetCreatureTemplate())->flags_extra |= CREATURE_FLAG_EXTRA_NO_BLOCK;
-    }
-
     return true;
 }
 
