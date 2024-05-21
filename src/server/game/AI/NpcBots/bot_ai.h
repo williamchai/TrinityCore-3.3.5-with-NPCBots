@@ -373,7 +373,7 @@ class bot_ai : public CreatureAI
         void ResetSpellCooldown(uint32 basespell) { SetSpellCooldown(basespell, 0); }
         void RemoveSpell(uint32 basespell);
         //void RemoveAllSpells();
-        void EnableAllSpells();
+        void EnableAllSpells(bool save);
         void SpellTimers(uint32 diff);
         static uint32 RaceSpellForClass(uint8 myrace, uint8 myclass);
 
