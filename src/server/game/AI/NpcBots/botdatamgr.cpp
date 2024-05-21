@@ -599,6 +599,16 @@ void BotDataMgr::Update(uint32 diff)
     for (auto& kv : botBGJoinEvents)
         kv.second.Update(diff);
 
+    //lock is not needed here
+    for (Creature const* bot : _existingBots)
+    {
+        if (bot->IsFreeBot() && !bot->IsWandererBot() && !bot->IsInWorld() && bot->FindMap() && !!SelectNpcBotData(bot->GetEntry()))
+        {
+            bot->GetBotAI()->CommonTimers(diff);
+            bot->GetBotAI()->UpdateAI(diff);
+        }
+    }
+
     if (!_botsWanderCreaturesToDespawn.empty())
     {
         TC_LOG_DEBUG("npcbots", "Bots to despawn: {}", uint32(_botsWanderCreaturesToDespawn.size()));
@@ -857,8 +867,8 @@ void BotDataMgr::LoadNpcBots(bool spawn)
             {
                 uint32 entry = *itr;
                 proto = sObjectMgr->GetCreatureTemplate(entry);
-                //                                     1     2    3           4            5           6
-                infores = WorldDatabase.PQuery("SELECT guid, map, position_x, position_y"/*, position_z, orientation*/" FROM creature WHERE id = {}", entry);
+                //                                     1     2    3           4           5           6
+                infores = WorldDatabase.PQuery("SELECT guid, map, position_x, position_y, position_z, orientation FROM creature WHERE id = {}", entry);
                 if (!infores)
                 {
                     TC_LOG_ERROR("server.loading", "Cannot spawn npcbot {} (id: {}), not found in `creature` table!", proto->Name, entry);
@@ -870,40 +880,34 @@ void BotDataMgr::LoadNpcBots(bool spawn)
                 uint32 mapId = uint32(field[1].GetUInt16());
                 float pos_x = field[2].GetFloat();
                 float pos_y = field[3].GetFloat();
-                //float pos_z = field[4].GetFloat();
-                //float ori = field[5].GetFloat();
+                float pos_z = field[4].GetFloat();
+                float ori = field[5].GetFloat();
 
                 CellCoord c = Trinity::ComputeCellCoord(pos_x, pos_y);
                 GridCoord g = Trinity::ComputeGridCoord(pos_x, pos_y);
                 ASSERT(c.IsCoordValid(), "Invalid Cell coord!");
                 ASSERT(g.IsCoordValid(), "Invalid Grid coord!");
                 Map* map = sMapMgr->CreateBaseMap(mapId);
-                map->LoadGrid(pos_x, pos_y);
-
-                ObjectGuid Guid(HighGuid::Unit, entry, tableGuid);
-                TC_LOG_DEBUG("server.loading", "bot {}: spawnId {}, full {}", entry, tableGuid, Guid.ToString());
-                Creature* bot = map->GetCreature(Guid);
-                if (!bot) //not in map, use storage
+                Position spawnPos(pos_x, pos_y, pos_z, ori);
+                Creature* bot = new Creature();
+                if (!bot->LoadBotCreatureFromDB(tableGuid, map, false, false, entry, &spawnPos))
                 {
-                    //TC_LOG_DEBUG("server.loading", "bot {}: spawnId {}, is not in map on load", entry, tableGuid);
-                    typedef Map::CreatureBySpawnIdContainer::const_iterator SpawnIter;
-                    std::pair<SpawnIter, SpawnIter> creBounds = map->GetCreatureBySpawnIdStore().equal_range(tableGuid);
-                    if (creBounds.first == creBounds.second)
-                    {
-                        TC_LOG_ERROR("server.loading", "bot {} is not in spawns list, consider re-spawning it!", entry);
-                        continue;
-                    }
-                    bot = creBounds.first->second;
+                    delete bot;
+                    TC_LOG_FATAL("server.loading", "Cannot load npcbot {} from DB!", entry);
+                    ABORT();
                 }
-                ASSERT(bot);
-                if (!bot->FindMap())
-                    TC_LOG_ERROR("server.loading", "bot {} is not in map!", entry);
-                if (!bot->IsInWorld())
-                    TC_LOG_ERROR("server.loading", "bot {} is not in world!", entry);
+
+                if (!bot->AIM_Initialize())
+                {
+                    delete bot;
+                    TC_LOG_FATAL("server.loading", "Cannot initialize npcbot {} AI!", entry);
+                    ABORT();
+                }
+
                 if (!bot->IsAlive())
                 {
-                    TC_LOG_ERROR("server.loading", "bot {} is dead, respawning!", entry);
-                    bot->Respawn();
+                    TC_LOG_WARN("server.loading", "bot {} is dead, respawning!", entry);
+                    bot->setDeathState(JUST_RESPAWNED);
                 }
 
                 TC_LOG_DEBUG("server.loading", ">> Spawned npcbot {} (id: {}, map: {}, grid: {}, cell: {})", proto->Name, entry, mapId, g.GetId(), c.GetId());
