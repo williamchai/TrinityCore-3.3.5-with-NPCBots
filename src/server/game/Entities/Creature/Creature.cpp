@@ -59,6 +59,7 @@ Random(CreatureRandomMovementType::Walk), InteractionPauseTimer(sWorld->getIntCo
 
 //npcbot
 #include "bot_ai.h"
+#include "botdatamgr.h"
 #include "botmgr.h"
 #include "bpet_ai.h"
 //end npcbot
@@ -1710,6 +1711,11 @@ bool Creature::LoadFromDB(ObjectGuid::LowType spawnId, Map* map, bool addToMap, 
         TC_LOG_ERROR("sql.sql", "Creature (SpawnID {}) not found in table `creature`, can't load. ", spawnId);
         return false;
     }
+
+    //npcbot
+    if (BotDataMgr::SelectNpcBotData(data->id))
+        return false;
+    //end npcbot
 
     m_spawnId = spawnId;
 
