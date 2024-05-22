@@ -478,7 +478,7 @@ public:
                             static const std::array<uint32, 3> TremorMechanics = { MECHANIC_FEAR, MECHANIC_CHARM, MECHANIC_SLEEP };
                             static const auto is_tremor_effect = [](SpellEffectInfo const& effect) {  return effect.IsAura(SPELL_AURA_MOD_FEAR) || effect.IsAura(SPELL_AURA_MOD_CHARM); };
                             if (std::find(TremorMechanics.cbegin(), TremorMechanics.cend(), vspellInfo->Mechanic) != TremorMechanics.cend() ||
-                                std::any_of(vspellInfo->Effects.cbegin(), vspellInfo->Effects.cend(), is_tremor_effect))
+                                std::any_of(vspellInfo->_effects.cbegin(), vspellInfo->_effects.cend(), is_tremor_effect))
                             {
                                 canTremor = true;
                             }
