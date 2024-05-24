@@ -1391,11 +1391,18 @@ bool BotDataMgr::GenerateBattlegroundBots(Player const* groupLeader, [[maybe_unu
             for (auto const& real_bg_pair : kv.second.m_Battlegrounds)
             {
                 Battleground const* real_bg = real_bg_pair.second.get();
-                if (real_bg->GetInstanceID() != 0 && real_bg->GetBracketId() == bracketId &&
-                    real_bg->GetStatus() < STATUS_WAIT_LEAVE && real_bg->HasFreeSlots())
+                if (real_bg->GetInstanceID() != 0 && real_bg->GetBracketId() == bracketId && real_bg->GetStatus() < STATUS_WAIT_LEAVE && real_bg->HasFreeSlots())
                 {
-                    TC_LOG_INFO("npcbots", "[Already running] Found running BG {} inited by player {} ({}). Not generating bots",
-                        uint32(bgTypeId), groupLeader->GetName(), groupLeader->GetGUID().GetCounter());
+                    if (real_bg->GetFreeSlotsForTeam(groupLeader->GetTeam()) < gqinfo->Players.size())
+                    {
+                        TC_LOG_INFO("npcbots", "[Already running 1] Found running non-full BG {} instance {}. Not generating bots: queuing group or player (leader {}) CANNOT join existing BG, prevent borrowing bots",
+                            uint32(bgTypeId), real_bg->GetInstanceID(), groupLeader->GetGUID().GetCounter());
+                    }
+                    else
+                    {
+                        TC_LOG_INFO("npcbots", "[Already running 2] Found running non-full BG {} instance {}. Not generating bots: queuing group or player (leader {}) CAN join existing BG",
+                            uint32(bgTypeId), real_bg->GetInstanceID(), groupLeader->GetGUID().GetCounter());
+                    }
                     return true;
                 }
             }

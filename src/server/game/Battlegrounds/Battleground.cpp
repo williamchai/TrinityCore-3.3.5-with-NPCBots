@@ -1461,7 +1461,14 @@ uint32 Battleground::GetFreeSlotsForTeam(uint32 Team) const
 
 bool Battleground::HasFreeSlots() const
 {
+    //npcbot
+    /*
+    //end npcbot
     return GetPlayersSize() < GetMaxPlayers();
+    //npcbot
+    */
+    return GetPlayersSize() + uint32(GetBots().size()) < GetMaxPlayers();
+    //end npcbot
 }
 
 void Battleground::BuildPvPLogDataPacket(WorldPacket& data)
