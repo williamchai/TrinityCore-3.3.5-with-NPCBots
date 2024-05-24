@@ -973,7 +973,7 @@ void Battleground::RemovePlayerAtLeave(ObjectGuid guid, bool Transport, bool Sen
         {
             BotMap const* map = player->GetBotMgr()->GetBotMap();
             for (BotMap::const_iterator itr = map->begin(); itr != map->end(); ++itr)
-                RemovePlayerAtLeave(itr->first, Transport, SendPacket);
+                RemoveBotAtLeave(itr->first);
         }
         //end npcbot
     }
