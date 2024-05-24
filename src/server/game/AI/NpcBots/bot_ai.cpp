@@ -2603,13 +2603,13 @@ void bot_ai::SetStats(bool force)
             if (mylevel >= 15)
                 armor_mod += 0.1f;
             //Survival of the Fittest
-            if (myclass == DRUID_BEAR_FORM && GetSpec() == BOT_SPEC_DRUID_FERAL)
-                armor_mod += 0.33f + (me->GetShapeshiftForm() == FORM_BEAR ? 1.8f : 3.7f);
+            if (myclass == DRUID_BEAR_FORM)
+                armor_mod += (GetSpec() == BOT_SPEC_DRUID_FERAL ? 0.33f : 0.0f) + (me->GetShapeshiftForm() == FORM_BEAR ? 1.8f : 3.7f);
             //Moonkin Form innate
-            else if (myclass == DRUID_MOONKIN_FORM && GetSpec() == BOT_SPEC_DRUID_BALANCE)
+            else if (myclass == DRUID_MOONKIN_FORM)
                 armor_mod += 3.7f;
             //Improved Tree Form
-            else if (myclass == DRUID_TREE_FORM && GetSpec() == BOT_SPEC_DRUID_RESTORATION)
+            else if (myclass == DRUID_TREE_FORM)
                 armor_mod += 2.0f;
             //Improved Barkskin
             //else if (myclass == DRUID_TRAVEL_FORM || GetBotStance() == BOT_STANCE_NONE)
