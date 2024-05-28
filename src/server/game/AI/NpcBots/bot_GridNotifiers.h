@@ -1111,6 +1111,8 @@ class NearbyRezTargetCheck
                     return false;
                 if (p->IsResurrectRequested())
                     return false;
+                if (p->GetUInt32Value(PLAYER_SELF_RES_SPELL))
+                    return false;
                 if (!ai->IsInBotParty(p))
                     return false;
             }

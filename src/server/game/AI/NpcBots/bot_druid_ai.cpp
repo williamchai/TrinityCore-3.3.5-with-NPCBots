@@ -1531,7 +1531,7 @@ public:
             {
                 Unit* target = master;
                 if (master->IsAlive()) return;
-                if (master->IsResurrectRequested()) return; //resurrected
+                if (master->IsResurrectRequested() || master->GetUInt32Value(PLAYER_SELF_RES_SPELL)) return; //resurrected
                 if (master->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
                     target = (Unit*)master->GetCorpse();
                 if (!target || !target->IsInWorld())
@@ -1558,7 +1558,7 @@ public:
                     Player* tPlayer = itr->GetSource();
                     Unit* target = tPlayer;
                     if (!tPlayer || tPlayer->IsAlive()) continue;
-                    if (tPlayer->IsResurrectRequested()) continue; //resurrected
+                    if (tPlayer->IsResurrectRequested() || tPlayer->GetUInt32Value(PLAYER_SELF_RES_SPELL)) continue; //resurrected
                     if (tPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
                         target = (Unit*)tPlayer->GetCorpse();
                     if (!target || !target->IsInWorld()) continue;
@@ -1572,7 +1572,7 @@ public:
             for (BotMap::const_iterator itr = botMap->begin(); itr != botMap->end(); ++itr)
             {
                 Creature* bot = itr->second;
-                if (bot && bot->IsInWorld() && !bot->IsAlive() && IsTank(bot) && me->GetDistance(bot) < 80)
+                if (bot && bot->IsInWorld() && !bot->IsAlive() && !bot->GetBotAI()->GetSelfRezSpell() && IsTank(bot) && me->GetDistance(bot) < 80)
                     targets.push_back(bot);
             }
 
