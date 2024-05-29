@@ -101,6 +101,7 @@ class TC_GAME_API BotMgr
         BotMap* GetBotMap() { return &_bots; }
 
         static bool IsNpcBotModEnabled();
+        static bool IsNpcBotLogEnabled();
         static bool IsNpcBotDungeonFinderEnabled();
         static bool DisplayEquipment();
         static bool ShowEquippedCloak();
