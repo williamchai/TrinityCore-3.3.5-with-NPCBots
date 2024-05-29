@@ -14905,8 +14905,12 @@ void bot_ai::InitEquips()
         //"SELECT creatorGuid, giftCreatorGuid, count, duration, charges, flags, enchantments, randomPropertyId, durability, playedTime, text, guid, itemEntry, owner_guid "
         //  "FROM item_instance WHERE guid IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", CONNECTION_SYNCH
 
+        std::array<uint32, BOT_INVENTORY_SIZE> assigned_item_guids{};
         for (uint8 i = 0; i != BOT_INVENTORY_SIZE; ++i)
+        {
             stmt->setUInt32(i, npcBotData->equips[i]);
+            assigned_item_guids[i] = npcBotData->equips[i];
+        }
 
         PreparedQueryResult iiresult = CharacterDatabase.Query(stmt);
 
@@ -14946,11 +14950,19 @@ void bot_ai::InitEquips()
                     }
                 }
                 ASSERT(found);
-                //ItemTemplate const* proto = item->GetTemplate();
-                //TC_LOG_ERROR("entities.player", "minion_ai::InitEquips(): bot {} (id: {}): found item: for slot {}: {} (id: {}, guidLow: {})",
-                //    me->GetName(), me->GetEntry(), i, proto->Name1, itemId, itemGuidLow);
+                for (uint8 i = 0; i != BOT_INVENTORY_SIZE; ++i)
+                {
+                    if (assigned_item_guids[i] == itemGuidLow)
+                        assigned_item_guids[i] = 0;
+                }
 
             } while (iiresult->NextRow());
+        }
+
+        for (uint8 i = 0; i != BOT_INVENTORY_SIZE; ++i)
+        {
+            if (assigned_item_guids[i] != 0)
+                TC_LOG_ERROR("npcbots", "InitEquips: bot {} {} has item guid {} assigned to slot {} which doesn't exist in DB!", me->GetEntry(), me->GetName(), assigned_item_guids[i], uint32(i));
         }
     }
 
