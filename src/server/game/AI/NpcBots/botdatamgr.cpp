@@ -2,6 +2,7 @@
 #include "BattlegroundQueue.h"
 #include "bot_ai.h"
 #include "botdatamgr.h"
+#include "botlog.h"
 #include "botmgr.h"
 #include "botspell.h"
 #include "botwanderful.h"
@@ -9,6 +10,7 @@
 #include "Containers.h"
 #include "Creature.h"
 #include "DatabaseEnv.h"
+#include "GameTime.h"
 #include "GroupMgr.h"
 #include "Item.h"
 #include "Log.h"
@@ -1006,6 +1008,13 @@ void BotDataMgr::LoadNpcBotGearStorage()
     } while (result->NextRow());
 
     TC_LOG_INFO("server.loading", ">> Loaded {} NPCBot stored items for {} bot owners in {} ms", count, uint32(player_guids.size()), GetMSTimeDiffToNow(oldMSTime));
+}
+
+void BotDataMgr::DeleteOldLogs()
+{
+    uint32 month_cutoff = static_cast<uint32>(GameTime::GetGameTime() - static_cast<time_t>(BOT_LOG_KEEP_DAYS) * DAY);
+    CharacterDatabase.PExecute("DELETE FROM `characters_npcbot_logs` WHERE timestamp IS NOT NULL AND timestamp < FROM_UNIXTIME({})", month_cutoff);
+    TC_LOG_INFO("server.loading", "Deleting NPCBot log entries older than {} days...", BOT_LOG_KEEP_DAYS);
 }
 
 void BotDataMgr::LoadWanderMap(bool reload)
