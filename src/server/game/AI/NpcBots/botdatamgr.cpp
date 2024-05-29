@@ -149,7 +149,7 @@ public:
     void Abort(uint64 /*e_time*/) override { AbortMe(); }
 };
 
-void SpawnWandererBot(uint32 bot_id, WanderNode const* spawnLoc, NpcBotRegistry* registry)
+static void SpawnWandererBot(uint32 bot_id, WanderNode const* spawnLoc, NpcBotRegistry* registry)
 {
     CreatureTemplate const& bot_template = _botsWanderCreatureTemplates.at(bot_id);
     NpcBotData const* bot_data = BotDataMgr::SelectNpcBotData(bot_id);
@@ -2097,7 +2097,7 @@ bool BotDataMgr::GenerateWanderingBotItemEnchants(Item* item, uint8 slot, uint8 
     //enchants
     SpellInfo const* sInfo;
     std::vector<uint32> valid_enchant_ids;
-    valid_enchant_ids.reserve(1u << 6);
+    valid_enchant_ids.reserve(1ULL << 6);
     switch (spec)
     {
         case BOT_SPEC_PALADIN_HOLY:
