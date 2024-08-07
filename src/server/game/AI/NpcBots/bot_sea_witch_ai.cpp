@@ -125,7 +125,7 @@ public:
         void JustEnteredCombat(Unit* u) override { bot_ai::JustEnteredCombat(u); }
         void EnterEvadeMode(EvadeReason why = EVADE_REASON_OTHER) override { bot_ai::EnterEvadeMode(why); }
         void MoveInLineOfSight(Unit* u) override { bot_ai::MoveInLineOfSight(u); }
-        void JustDied(Unit* u) override { /*UnsummonAll();*/ bot_ai::JustDied(u); }
+        void JustDied(Unit* u) override { /*UnsummonAll(false);*/ bot_ai::JustDied(u); }
         void DoNonCombatActions(uint32 /*diff*/) { }
         void KilledUnit(Unit* u) override { bot_ai::KilledUnit(u); }
 
@@ -605,7 +605,7 @@ public:
         void SummonBotPet()
         {
             if (!_minions.empty())
-                UnsummonAll();
+                UnsummonAll(false);
 
             Position spos;
             if (Unit const* mytar = me->GetVictim())
@@ -630,10 +630,9 @@ public:
             _minions.insert(myPet);
         }
 
-        void UnsummonAll() override
+        void UnsummonAll(bool savePets = true) override
         {
-            while (!_minions.empty())
-                (*_minions.begin())->ToTempSummon()->UnSummon();
+            UnsummonCreatures(_minions, savePets);
         }
 
         void SummonedCreatureDies(Creature* /*summon*/, Unit* /*killer*/) override
@@ -648,6 +647,11 @@ public:
             //TC_LOG_ERROR("entities.unit", "SummonedCreatureDespawn: {}'s {}", me->GetName(), summon->GetName());
             if (_minions.find(summon) != _minions.end())
                 _minions.erase(summon);
+        }
+
+        void ResummonAll() override
+        {
+            ResummonCreatures(_minions);
         }
 
         float GetSpellAttackRange(bool longRange) const override
@@ -668,7 +672,7 @@ public:
 
         void Reset() override
         {
-            UnsummonAll();
+            UnsummonAll(false);
 
             _spell_preact = false;
 
@@ -757,7 +761,7 @@ public:
             return &Seawitch_spells_support;
         }
     private:
-        typedef std::set<Unit*> Summons;
+        typedef std::set<Creature*> Summons;
         Summons _minions;
 
         bool _spell_preact;

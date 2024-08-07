@@ -344,7 +344,7 @@ public:
         void KilledUnit(Unit* u) override { bot_ai::KilledUnit(u); }
         void EnterEvadeMode(EvadeReason why = EVADE_REASON_OTHER) override { bot_ai::EnterEvadeMode(why); }
         void MoveInLineOfSight(Unit* u) override { bot_ai::MoveInLineOfSight(u); }
-        void JustDied(Unit* u) override { UnsummonAll(); removeShapeshiftForm(); bot_ai::JustDied(u); }
+        void JustDied(Unit* u) override { UnsummonAll(false); removeShapeshiftForm(); bot_ai::JustDied(u); }
 
         bool removeShapeshiftForm() override
         {
@@ -2167,7 +2167,7 @@ public:
             }
         }
 
-        void UnsummonAll() override
+        void UnsummonAll(bool /*savePets*/ = true) override
         {
             UnsummonWolves();
 
@@ -2192,7 +2192,7 @@ public:
             {
                 TC_LOG_ERROR("entities.player", "OnBotDespawn(): Shaman bot {} received NULL", me->GetName());
                 ASSERT(false);
-                //UnsummonAll();
+                //UnsummonAll(false);
                 return;
             }
 
@@ -2409,7 +2409,7 @@ public:
 
         void Reset() override
         {
-            UnsummonAll();
+            UnsummonAll(false);
             for (uint8 i = 0; i != MAX_WOLVES; ++i)
                 _wolves[i] = ObjectGuid::Empty;
             for (uint8 i = 0; i != MAX_TOTEMS; ++i)

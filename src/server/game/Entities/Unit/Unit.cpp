@@ -9010,6 +9010,20 @@ void Unit::UpdateSpeed(UnitMoveType mtype)
                 }
             }
         }
+
+        //npcbot
+        if (creature->IsNPCBotPet() && !creature->IsInCombat() && GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
+        {
+            Unit* followed = ASSERT_NOTNULL(dynamic_cast<AbstractFollower*>(GetMotionMaster()->GetCurrentMovementGenerator()))->GetTarget();
+            if (followed && (followed->GetGUID() == GetOwnerGUID() || followed->GetGUID() == GetCreatorGUID()) && !followed->IsInCombat())
+            {
+                float ownerSpeed = followed->GetSpeedRate(mtype);
+                if (speed < ownerSpeed)
+                    speed = ownerSpeed;
+                speed *= std::min(std::max(1.0f, 0.75f + (GetDistance(followed) - PET_FOLLOW_DIST) * 0.05f), 1.5f);
+            }
+        }
+        //end npcbot
     }
 
     // Apply strongest slow aura mod to speed

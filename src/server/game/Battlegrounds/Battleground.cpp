@@ -823,7 +823,7 @@ void Battleground::EndBattleground(uint32 winner)
                     BotMgr::ReviveBot(const_cast<Creature*>(bot));
                 else
                 {
-                    bot->GetBotAI()->UnsummonAll();
+                    bot->GetBotAI()->UnsummonAll(false);
                     const_cast<Creature*>(bot)->InterruptNonMeleeSpells(true);
                     const_cast<Creature*>(bot)->RemoveAllControlled();
                     const_cast<Creature*>(bot)->SetUnitFlag(UNIT_FLAG_IMMUNE);
