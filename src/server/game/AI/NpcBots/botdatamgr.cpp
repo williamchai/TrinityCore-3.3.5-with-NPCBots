@@ -258,21 +258,16 @@ private:
         return (bot_class >= BOT_CLASS_EX_START) ? wbot_faction_for_ex_class.find(bot_class)->second : rentry ? rentry->FactionID : 14u;
     }
 
-    bool GenerateWanderingBotToSpawn(std::map<uint8, std::set<uint32>>& spareBotIdsPerClass, uint8 desired_bracket,
+    bool GenerateWanderingBotToSpawn(std::pair<uint8, uint32> const& spareBotPair, uint8 desired_bracket,
         NodeVec const& spawns_a, NodeVec const& spawns_h, NodeVec const& spawns_n,
         bool immediate, PvPDifficultyEntry const* bracketEntry, NpcBotRegistry* registry)
     {
-        ASSERT(!spareBotIdsPerClass.empty());
-
         CreatureTemplateContainer const& all_templates = sObjectMgr->GetCreatureTemplates();
 
         while (all_templates.find(++next_bot_id) != all_templates.cend()) {}
 
-        auto const& spareBotPair = Trinity::Containers::SelectRandomContainerElement(spareBotIdsPerClass);
         const uint8 bot_class = spareBotPair.first;
-        auto const& cSet = spareBotPair.second;
-        ASSERT(!cSet.empty());
-        uint32 orig_entry = cSet.size() == 1 ? *cSet.cbegin() : Trinity::Containers::SelectRandomContainerElement(cSet);
+        const uint32 orig_entry = spareBotPair.second;
         CreatureTemplate const* orig_template = ASSERT_NOTNULL(sObjectMgr->GetCreatureTemplate(orig_entry));
         NpcBotExtras const* orig_extras = ASSERT_NOTNULL(BotDataMgr::SelectNpcBotExtras(orig_entry));
         uint32 bot_faction = GetDefaultFactionForRaceClass(bot_class, orig_extras->race);
@@ -375,10 +370,6 @@ private:
         if (_spareBotIdsPerClassMap.at(bot_class).empty())
             _spareBotIdsPerClassMap.erase(bot_class);
 
-        spareBotIdsPerClass.at(bot_class).erase(orig_entry);
-        if (spareBotIdsPerClass.at(bot_class).empty())
-            spareBotIdsPerClass.erase(bot_class);
-
         return true;
     }
 
@@ -475,9 +466,11 @@ public:
             }
         }
 
-        decltype (_spareBotIdsPerClassMap) teamSpareBotIdsPerClass;
+        std::vector<std::pair<uint8, uint32>> teamSpareBotIdsPerClass;
         PctBrackets bracketPcts{};
         PctBrackets bots_per_bracket{};
+
+        teamSpareBotIdsPerClass.reserve(count);
 
         if (team == -1)
         {
@@ -485,7 +478,9 @@ public:
                 return false;
 
             //make a full copy
-            teamSpareBotIdsPerClass = _spareBotIdsPerClassMap;
+            for (auto const& kv : _spareBotIdsPerClassMap)
+                for (uint32 spareBotId : kv.second)
+                    teamSpareBotIdsPerClass.push_back({kv.first, spareBotId});
             bracketPcts = BotMgr::GetBotWandererLevelBrackets();
         }
         else
@@ -519,14 +514,10 @@ public:
                     if (int32(botTeam) != team)
                         continue;
 
-                    if (bracketEntry)
-                    {
-                        uint8 botminlevel = BotDataMgr::GetMinLevelForBotClass(kv.first);
-                        if (botminlevel > bracketEntry->MaxLevel)
-                            continue;
-                    }
+                    if (bracketEntry && BotDataMgr::GetMinLevelForBotClass(kv.first) > bracketEntry->MaxLevel)
+                        continue;
 
-                    teamSpareBotIdsPerClass[kv.first].insert(spareBotId);
+                    teamSpareBotIdsPerClass.push_back({kv.first, spareBotId});
                 }
             }
         }
@@ -561,6 +552,8 @@ public:
                 --bots_per_bracket[bracket];
             }
         }
+
+        Trinity::Containers::RandomShuffle(teamSpareBotIdsPerClass);
         Trinity::Containers::RandomShuffle(brackets_shuffled);
 
         for (size_t i = 0; i < brackets_shuffled.size() && !teamSpareBotIdsPerClass.empty();) // i is a counter, NOT used as index or value
@@ -570,10 +563,11 @@ public:
             int8 tries = 100;
             do {
                 --tries;
-                if (GenerateWanderingBotToSpawn(teamSpareBotIdsPerClass, bracket, spawns_a, spawns_h, spawns_n, immediate, bracketEntry, registry))
+                if (GenerateWanderingBotToSpawn(teamSpareBotIdsPerClass.back(), bracket, spawns_a, spawns_h, spawns_n, immediate, bracketEntry, registry))
                 {
                     ++i;
                     ++spawned;
+                    teamSpareBotIdsPerClass.pop_back();
                     break;
                 }
             } while (tries >= 0);
