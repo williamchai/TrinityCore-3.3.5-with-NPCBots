@@ -2075,7 +2075,6 @@ void GenerateBotCustomSpells()
     sinfo->_effects[0].DieSides = 0;
     //51) END ENERGIZE VISUAL
 
-
     //XX) FIXES
     spellId = 48155; // Mind Flay (Rank 8)
     botSpellInfoOverrides.insert({ spellId, *sSpellMgr->GetSpellInfo(spellId) });
