@@ -11554,7 +11554,7 @@ void bot_ai::_autoLootCreatureGold(Creature* creature) const
 {
     Loot* loot = &creature->loot;
 
-    sScriptMgr->OnBeforeLootMoney(master, loot);
+    //sScriptMgr->OnBeforeLootMoney(master, loot);
     loot->NotifyMoneyRemoved();
     Group const* gr = master->GetGroup();
     if (!gr)
