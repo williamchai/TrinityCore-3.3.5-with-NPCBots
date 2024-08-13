@@ -649,11 +649,6 @@ public:
                 _minions.erase(summon);
         }
 
-        void ResummonAll() override
-        {
-            ResummonCreatures(_minions);
-        }
-
         float GetSpellAttackRange(bool longRange) const override
         {
             return longRange ? CalcSpellMaxRange(FROST_ARROW_1) - 6.f : CalcSpellMaxRange(FROST_ARROW_1) - 15.f;

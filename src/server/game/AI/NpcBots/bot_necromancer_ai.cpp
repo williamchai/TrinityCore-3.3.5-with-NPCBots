@@ -645,11 +645,6 @@ public:
                 _minions.erase(summon);
         }
 
-        void ResummonAll() override
-        {
-            ResummonCreatures(_minions);
-        }
-
         uint32 GetAIMiscValue(uint32 data) const override
         {
             switch (data)
