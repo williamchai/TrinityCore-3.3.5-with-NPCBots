@@ -4170,7 +4170,7 @@ NpcBot.LogToDB = 1
 
 #
 #    NpcBot.MaxBots
-#        Description: Maximum number of bots allowed for players per level bracket:
+#        Description: Maximum number of bots player can hire per level bracket:
 #                     0-9, 10-19, 20,29, ... , 70-79, 80+.
 #        Default:     1,1,1,1,1,1,1,1,1 - (1 for all levels)
 #                     0,1,2,3,4,5,6,7,8 - (1 per 10 levels)
@@ -4180,10 +4180,18 @@ NpcBot.MaxBots = 1,1,1,1,1,1,1,1,1
 
 #
 #    NpcBot.MaxBotsPerClass
-#        Description: Maximum bots of each class allowed for players.
+#        Description: Maximum number of bots player can hire per bot class.
 #        Default:     0 - no limit
 
 NpcBot.MaxBotsPerClass = 0
+
+#
+#    NpcBot.MaxBotsPerAccount
+#        Description: Maximum total number of bots players can hire per account.
+#        Default:     0 - no limit
+#                     9 - up to 9 bots total per account
+
+NpcBot.MaxBotsPerAccount = 0
 
 #
 #    NpcBot.Botgiver.FilterRaces
