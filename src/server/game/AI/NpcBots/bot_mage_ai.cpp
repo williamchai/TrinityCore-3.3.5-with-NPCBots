@@ -1019,7 +1019,7 @@ public:
             }
             //Arcane Power: +20% bonus damage
             if (AuraEffect const* pow = me->GetAuraEffect(SPELL_AURA_ADD_PCT_MODIFIER, SPELLFAMILY_MAGE, 0x0, 0x80000, 0x0))
-                if (pow->IsAffectedOnSpell(spellInfo))
+                if (pow->IsAffectingSpell(spellInfo))
                     pctbonus += 0.2f;
             //Molten Fury: 12% bonus damage for All spells against target with less than 35% hp
             if ((GetSpec() == BOT_SPEC_MAGE_FIRE) &&
@@ -1068,7 +1068,7 @@ public:
                     pctbonus += 1.0f;
             //Clearcasting: -100% mana cost for damaging spells
             if (AuraEffect const* eff = me->GetAuraEffect(ARCANE_CONCENTRATION_BUFF, 0, me->GetGUID()))
-                if (eff->IsAffectedOnSpell(spellInfo))
+                if (eff->IsAffectingSpell(spellInfo))
                     pctbonus += 1.0f;
             //Missile Barrage: -100% mana cost for Arcane Missiles
             if (baseId == ARCANEMISSILES_1)
@@ -1092,7 +1092,7 @@ public:
                     pctbonus += -1.75f * bla->GetBase()->GetStackAmount();
             //Arcane Power: +20% mana cost
             if (AuraEffect const* pow = me->GetAuraEffect(SPELL_AURA_ADD_PCT_MODIFIER, SPELLFAMILY_MAGE, 0x0, 0x80000, 0x0))
-                if (pow->IsAffectedOnSpell(spellInfo))
+                if (pow->IsAffectingSpell(spellInfo))
                     pctbonus += -0.2f;
 
             //Glyph of Arcane Intellect: -50% mana cost for Arcane Intellect/Brilliance
@@ -1131,7 +1131,7 @@ public:
                     timebonus += casttime;
             //Presence of Mind: -100% cast time
             if (AuraEffect const* eff = me->GetAuraEffect(SPELL_AURA_ADD_PCT_MODIFIER, SPELLFAMILY_MAGE, 0x0, 0x20, 0x0))
-                if (eff->IsAffectedOnSpell(spellInfo))
+                if (eff->IsAffectingSpell(spellInfo))
                     timebonus += casttime;
 
             //flat mods
@@ -1298,7 +1298,7 @@ public:
             //Handle clearcasting
             if (AuraEffect const* eff = me->GetAuraEffect(ARCANE_CONCENTRATION_BUFF, 0, me->GetGUID()))
             {
-                if (eff->IsAffectedOnSpell(spellInfo))
+                if (eff->IsAffectingSpell(spellInfo))
                 {
                     //if (int32 cost = spellInfo->CalcPowerCost(me, spellInfo->GetSchoolMask()))
                     {
@@ -1314,7 +1314,7 @@ public:
             bool consumed_Pom = false;
             if (AuraEffect const* eff = me->GetAuraEffect(SPELL_AURA_ADD_PCT_MODIFIER, SPELLFAMILY_MAGE, 0x0, 0x20, 0x0))
             {
-                if (eff->IsAffectedOnSpell(spellInfo))
+                if (eff->IsAffectingSpell(spellInfo))
                 {
                     me->RemoveAurasDueToSpell(PRESENCE_OF_MIND_1);
                     consumed_Pom = true;

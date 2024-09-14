@@ -1468,13 +1468,13 @@ public:
             if (baseId == HOLY_LIGHT_1)
             {
                 if (AuraEffect const* infu = me->GetAuraEffect(INFUSION_OF_LIGHT_BUFF, 0))
-                    if (infu->IsAffectedOnSpell(spellInfo))
+                    if (infu->IsAffectingSpell(spellInfo))
                         crit_chance += 20.f;
             }
             if (baseId == HOLY_LIGHT_1 || baseId == FLASH_OF_LIGHT_1 || baseId == HOLY_SHOCK_1)
             {
                 if (AuraEffect const* favo = me->GetAuraEffect(DIVINE_FAVOR_1, 0))
-                    if (favo->IsAffectedOnSpell(spellInfo))
+                    if (favo->IsAffectingSpell(spellInfo))
                         crit_chance += 100.f;
             }
         }
@@ -1616,9 +1616,9 @@ public:
                 AuraEffect const* arto = me->GetAuraEffect(THE_ART_OF_WAR_BUFF, 0);
                 //Infusion of Light
                 AuraEffect const* infu = me->GetAuraEffect(INFUSION_OF_LIGHT_BUFF, 1);
-                if (arto && arto->IsAffectedOnSpell(spellInfo))
+                if (arto && arto->IsAffectingSpell(spellInfo))
                     timebonus += casttime;
-                else if (infu && infu->IsAffectedOnSpell(spellInfo))
+                else if (infu && infu->IsAffectingSpell(spellInfo))
                     timebonus += casttime;
             }
 
@@ -1631,10 +1631,10 @@ public:
             if (baseId == HOLY_LIGHT_1)
             {
                 if (AuraEffect const* enli = me->GetAuraEffect(ENLIGHTENMENT_BUFF, 0))
-                    if (enli->IsAffectedOnSpell(spellInfo))
+                    if (enli->IsAffectingSpell(spellInfo))
                         timebonus += 500;
                 if (AuraEffect const* grac = me->GetAuraEffect(LIGHTS_GRACE_BUFF, 0))
-                    if (grac->IsAffectedOnSpell(spellInfo))
+                    if (grac->IsAffectingSpell(spellInfo))
                         timebonus += 500;
             }
 
@@ -1837,20 +1837,20 @@ public:
             if (baseId == HOLY_LIGHT_1 || baseId == FLASH_OF_LIGHT_1 || baseId == HOLY_SHOCK_1)
             {
                 if (AuraEffect const* favo = me->GetAuraEffect(DIVINE_FAVOR_1, 0))
-                    if (favo->IsAffectedOnSpell(spellInfo))
+                    if (favo->IsAffectingSpell(spellInfo))
                         me->RemoveAurasDueToSpell(DIVINE_FAVOR_1);
             }
 
             if (baseId == HOLY_LIGHT_1)
             {
                 if (AuraEffect const* enli = me->GetAuraEffect(ENLIGHTENMENT_BUFF, 0))
-                    if (enli->IsAffectedOnSpell(spellInfo))
+                    if (enli->IsAffectingSpell(spellInfo))
                         me->RemoveAurasDueToSpell(ENLIGHTENMENT_BUFF);
                 if (AuraEffect const* grac = me->GetAuraEffect(LIGHTS_GRACE_BUFF, 0))
-                    if (grac->IsAffectedOnSpell(spellInfo))
+                    if (grac->IsAffectingSpell(spellInfo))
                         me->RemoveAurasDueToSpell(LIGHTS_GRACE_BUFF);
                 if (AuraEffect const* infu = me->GetAuraEffect(INFUSION_OF_LIGHT_BUFF, 0))
-                    if (infu->IsAffectedOnSpell(spellInfo))
+                    if (infu->IsAffectingSpell(spellInfo))
                         me->RemoveAurasDueToSpell(INFUSION_OF_LIGHT_BUFF);
             }
 
@@ -1860,9 +1860,9 @@ public:
                 AuraEffect const* infu = me->GetAuraEffect(INFUSION_OF_LIGHT_BUFF, 1);
                 //The Art of War
                 AuraEffect const* arto = me->GetAuraEffect(THE_ART_OF_WAR_BUFF, 0);
-                if (arto && arto->IsAffectedOnSpell(spellInfo))
+                if (arto && arto->IsAffectingSpell(spellInfo))
                     me->RemoveAurasDueToSpell(THE_ART_OF_WAR_BUFF);
-                else if (infu && infu->IsAffectedOnSpell(spellInfo))
+                else if (infu && infu->IsAffectingSpell(spellInfo))
                     me->RemoveAurasDueToSpell(INFUSION_OF_LIGHT_BUFF);
             }
 

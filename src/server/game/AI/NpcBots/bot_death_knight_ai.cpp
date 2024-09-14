@@ -967,11 +967,11 @@ public:
 
             //Killing Machine
             if (AuraEffect const* mach = me->GetAuraEffect(KILLING_MACHINE_BUFF, 0))
-                if (mach->IsAffectedOnSpell(spellInfo))
+                if (mach->IsAffectingSpell(spellInfo))
                     crit_chance += 100.f;
             //Deathchill
             if (AuraEffect const* chil = me->GetAuraEffect(DEATHCHILL_1, 0))
-                if (chil->IsAffectedOnSpell(spellInfo))
+                if (chil->IsAffectingSpell(spellInfo))
                     crit_chance += 100.f;
 
             //Subversion: 9% additional critical chance for Blood Strike, Scourge Strike, Heart Strike and Obliterate
@@ -1456,9 +1456,9 @@ public:
             //Deathchill
             AuraEffect const* mach = me->GetAuraEffect(KILLING_MACHINE_BUFF, 0);
             AuraEffect const* chil = me->GetAuraEffect(DEATHCHILL_1, 0);
-            if (mach && mach->IsAffectedOnSpell(spell))
+            if (mach && mach->IsAffectingSpell(spell))
                 me->RemoveAurasDueToSpell(KILLING_MACHINE_BUFF);
-            else if (chil && chil->IsAffectedOnSpell(spell))
+            else if (chil && chil->IsAffectingSpell(spell))
                 me->RemoveAurasDueToSpell(DEATHCHILL_1);
 
             //Icy Touch tanking helper (TODO: remove this hack after threat mods implementation)

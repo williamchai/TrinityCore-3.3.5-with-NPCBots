@@ -1888,7 +1888,7 @@ public:
             //100% mods
             //Clearcasting: -100% mana/rage/energy cost for any spell
             if (AuraEffect const* eff = me->GetAuraEffect(OMEN_OF_CLARITY_BUFF, 0, me->GetGUID()))
-                if (eff->IsAffectedOnSpell(spellInfo))
+                if (eff->IsAffectingSpell(spellInfo))
                     pctbonus += 1.0f;
 
             //percent mods
@@ -1966,9 +1966,9 @@ public:
             AuraEffect const* pred = me->GetAuraEffect(PREDATORS_SWIFTNESS_BUFF, 0);
             //Nature's Swiftness: -100% cast time
             AuraEffect const* natu = me->GetAuraEffect(NATURES_SWIFTNESS_1, 0);
-            if ((elun && elun->IsAffectedOnSpell(spellInfo)) ||
-                (pred && pred->IsAffectedOnSpell(spellInfo)) ||
-                (natu && natu->IsAffectedOnSpell(spellInfo)))
+            if ((elun && elun->IsAffectingSpell(spellInfo)) ||
+                (pred && pred->IsAffectingSpell(spellInfo)) ||
+                (natu && natu->IsAffectingSpell(spellInfo)))
                 pctbonus += 1.0f;
 
             //pct mods
@@ -2165,7 +2165,7 @@ public:
             //Handle clearcasting
             //Notes: bugged with hurricane (periodic)
             if (AuraEffect const* eff = me->GetAuraEffect(OMEN_OF_CLARITY_BUFF, 0, me->GetGUID()))
-                if (eff->IsAffectedOnSpell(spellInfo) && !spellInfo->IsRankOf(sSpellMgr->GetSpellInfo(HURRICANE_DAMAGE_1)))
+                if (eff->IsAffectingSpell(spellInfo) && !spellInfo->IsRankOf(sSpellMgr->GetSpellInfo(HURRICANE_DAMAGE_1)))
                     me->RemoveAurasDueToSpell(OMEN_OF_CLARITY_BUFF);
 
             //Elune's Wrath: -100% takes priority since only Starfire
@@ -2174,11 +2174,11 @@ public:
             AuraEffect const* pred = me->GetAuraEffect(PREDATORS_SWIFTNESS_BUFF, 0);
             //Nature's Swiftness
             AuraEffect const* natu = me->GetAuraEffect(NATURES_SWIFTNESS_1, 0);
-            if (elun && elun->IsAffectedOnSpell(spellInfo))
+            if (elun && elun->IsAffectingSpell(spellInfo))
                 me->RemoveAurasDueToSpell(ELUNES_WRATH_BUFF);
-            else if (pred && pred->IsAffectedOnSpell(spellInfo))
+            else if (pred && pred->IsAffectingSpell(spellInfo))
                 me->RemoveAurasDueToSpell(PREDATORS_SWIFTNESS_BUFF);
-            else if (natu && natu->IsAffectedOnSpell(spellInfo))
+            else if (natu && natu->IsAffectingSpell(spellInfo))
                 me->RemoveAurasDueToSpell(NATURES_SWIFTNESS_1);
         }
 

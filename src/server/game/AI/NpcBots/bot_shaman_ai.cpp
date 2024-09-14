@@ -1437,12 +1437,12 @@ public:
             //Tidal Waves (Lesser Healing Wave crit)
             if (spellInfo->SpellFamilyFlags[0] & 0x80)
                 if (AuraEffect const* eff = me->GetAuraEffect(TIDAL_WAVES_BUFF, 1, me->GetGUID()))
-                    if (eff->IsAffectedOnSpell(spellInfo))
+                    if (eff->IsAffectingSpell(spellInfo))
                         crit_chance += 25.f;
             //Tidal Force
             if (spellInfo->SpellFamilyFlags[0] & 0x1C0)
                 if (AuraEffect const* eff = me->GetAuraEffect(TIDAL_FORCE_BUFF, 0, me->GetGUID()))
-                    if (eff->IsAffectedOnSpell(spellInfo))
+                    if (eff->IsAffectingSpell(spellInfo))
                         crit_chance += 20.f * eff->GetBase()->GetStackAmount();
         }
 
@@ -1592,7 +1592,7 @@ public:
             //percent mods
             //Clearcasting: -40% mana cost
             if (AuraEffect const* eff = me->GetAuraEffect(ELEMENTAL_FOCUS_BUFF, 0, me->GetGUID()))
-                if (eff->IsAffectedOnSpell(spellInfo))
+                if (eff->IsAffectingSpell(spellInfo))
                     pctbonus += 0.4f;
             //Convection
             if (lvl >= 10 && ((spellInfo->SpellFamilyFlags[0] & 0x90100003) || (spellInfo->SpellFamilyFlags[1] & 0x8001000)))
@@ -1635,7 +1635,7 @@ public:
             //100% mods
             //Nature's Swiftness: -100% cast time
             if (AuraEffect const* eff = me->GetAuraEffect(NATURES_SWIFTNESS_1, 0, me->GetGUID()))
-                if (eff->IsAffectedOnSpell(spellInfo))
+                if (eff->IsAffectingSpell(spellInfo))
                     pctbonus += 1.0f;
 
             //pct mods
@@ -1653,7 +1653,7 @@ public:
             //Tidal Waves (Healing Wave cast time)
             if (spellInfo->SpellFamilyFlags[0] & 0x40)
                 if (AuraEffect const* eff = me->GetAuraEffect(TIDAL_WAVES_BUFF, 0, me->GetGUID()))
-                    if (eff->IsAffectedOnSpell(spellInfo))
+                    if (eff->IsAffectingSpell(spellInfo))
                         pctbonus += 0.3f;
 
             //flat mods
@@ -1807,31 +1807,31 @@ public:
 
             //Handle Clearcasting
             if (AuraEffect* eff = me->GetAuraEffect(ELEMENTAL_FOCUS_BUFF, 0, me->GetGUID()))
-                if (eff->IsAffectedOnSpell(spellInfo))
+                if (eff->IsAffectingSpell(spellInfo))
                     eff->GetBase()->DropCharge();
             //Handle Tidal Focus
             //Healing Wave (cast time): if full Maelstrom than don't use up charge
             if (MaelstromCount < 5 && (spellInfo->SpellFamilyFlags[0] & 0x40))
                 if (AuraEffect* eff = me->GetAuraEffect(TIDAL_WAVES_BUFF, 0, me->GetGUID()))
-                    if (eff->IsAffectedOnSpell(spellInfo))
+                    if (eff->IsAffectingSpell(spellInfo))
                         eff->GetBase()->DropCharge();
             //Lesser Healing Wave (crit)
             if (spellInfo->SpellFamilyFlags[0] & 0x80)
                 if (AuraEffect* eff = me->GetAuraEffect(TIDAL_WAVES_BUFF, 1, me->GetGUID()))
-                    if (eff->IsAffectedOnSpell(spellInfo))
+                    if (eff->IsAffectingSpell(spellInfo))
                         eff->GetBase()->DropCharge();
 
             //Nature's Swiftness
             if (AuraEffect const* eff = me->GetAuraEffect(NATURES_SWIFTNESS_1, 0, me->GetGUID()))
             {
-                if (eff->IsAffectedOnSpell(spellInfo))
+                if (eff->IsAffectingSpell(spellInfo))
                     me->RemoveAurasDueToSpell(NATURES_SWIFTNESS_1);
             }
 
             //Tidal Force: Handled in Unit::HandleDummyAuraProc(): case 55166:
             //if (spellInfo->SpellFamilyFlags[0] & 0x1C0)
             //    if (AuraEffect const* eff = me->GetAuraEffect(TIDAL_FORCE_BUFF, 0, me->GetGUID()))
-            //        if (eff->IsAffectedOnSpell(spellInfo))
+            //        if (eff->IsAffectingSpell(spellInfo))
             //            me->RemoveAuraFromStack(TIDAL_FORCE_BUFF);
 
             //Shield cd

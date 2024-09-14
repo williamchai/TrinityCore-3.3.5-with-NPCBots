@@ -1087,7 +1087,7 @@ public:
 
             //Inner Focus
             if (AuraEffect const* focu = me->GetAuraEffect(INNER_FOCUS_1, 0))
-                if (focu->IsAffectedOnSpell(spellInfo))
+                if (focu->IsAffectingSpell(spellInfo))
                     crit_chance += 25.f;
 
             //Benediction (23236)
@@ -1277,11 +1277,11 @@ public:
             //percent mods
             //Inner Focus
             if (AuraEffect const* focu = me->GetAuraEffect(INNER_FOCUS_1, 0))
-                if (focu->IsAffectedOnSpell(spellInfo))
+                if (focu->IsAffectingSpell(spellInfo))
                     pctbonus += 1.f;
             //Surge of Light
             if (AuraEffect const* surg = me->GetAuraEffect(SURGE_OF_LIGHT_BUFF, 1))
-                if (surg->IsAffectedOnSpell(spellInfo))
+                if (surg->IsAffectingSpell(spellInfo))
                     pctbonus += 1.f;
 
             //Reduced Prayer of Healing Cost (38410):
@@ -1354,7 +1354,7 @@ public:
             //100% mods
             //Surge of Light
             if (AuraEffect const* surg = me->GetAuraEffect(SURGE_OF_LIGHT_BUFF, 1))
-                if (surg->IsAffectedOnSpell(spellInfo))
+                if (surg->IsAffectingSpell(spellInfo))
                     pctbonus += 1.f;
 
             //pct mods
@@ -1362,7 +1362,7 @@ public:
             if (baseId == GREATER_HEAL_1 || baseId == PRAYER_OF_HEALING_1)
             {
                 if (AuraEffect const* sere = me->GetAuraEffect(SERENDIPITY_BUFF, 0))
-                    if (sere->IsAffectedOnSpell(spellInfo))
+                    if (sere->IsAffectingSpell(spellInfo))
                         pctbonus += 0.12f * sere->GetBase()->GetStackAmount();
             }
 
@@ -1568,14 +1568,14 @@ public:
             //Inner Focus
             AuraEffect const* surg = me->GetAuraEffect(SURGE_OF_LIGHT_BUFF, 1);
             AuraEffect const* focu = me->GetAuraEffect(INNER_FOCUS_1, 0);
-            if (surg && surg->IsAffectedOnSpell(spellInfo))
+            if (surg && surg->IsAffectingSpell(spellInfo))
                 me->RemoveAurasDueToSpell(SURGE_OF_LIGHT_BUFF);
-            else if (focu && focu->IsAffectedOnSpell(spellInfo))
+            else if (focu && focu->IsAffectingSpell(spellInfo))
                 me->RemoveAurasDueToSpell(INNER_FOCUS_1);
 
             //Serendipity
             if (AuraEffect const* sere = me->GetAuraEffect(SERENDIPITY_BUFF, 0))
-                if (sere->IsAffectedOnSpell(spellInfo))
+                if (sere->IsAffectingSpell(spellInfo))
                     me->RemoveAurasDueToSpell(SERENDIPITY_BUFF);
         }
 

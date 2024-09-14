@@ -1228,12 +1228,12 @@ public:
 
             //Recklessness: 100% additional critical chance for damaging abilities
             if (AuraEffect const* eff = me->GetAuraEffect(RECKLESSNESS_1, EFFECT_0))
-                if (eff->IsAffectedOnSpell(spellInfo))
+                if (eff->IsAffectingSpell(spellInfo))
                     crit_chance += 100.f;
             //Juggernaught: 25 additional critical chance for Mortal Strike and Slam
             if (lvl >= 45 && (baseId == SLAM_1 || baseId == MORTAL_STRIKE_1))
                 if (AuraEffect const* jugg = me->GetAuraEffect(JUGGERNAUGHT_BUFF, 0))
-                    if (jugg->IsAffectedOnSpell(spellInfo))
+                    if (jugg->IsAffectingSpell(spellInfo))
                         crit_chance += 25.f;
 
             //Poleaxe Specialization: 5% additional critical chance for all attacks
@@ -1654,12 +1654,12 @@ public:
 
             //Recklessness: handle charge drop
             AuraEffect const* reck = me->GetAuraEffect(RECKLESSNESS_1, EFFECT_0);
-            if (reck && reck->IsAffectedOnSpell(spell))
+            if (reck && reck->IsAffectingSpell(spell))
                 reck->GetBase()->DropCharge();
             //Juggernaught: consume buff
             if (baseId == SLAM_1 || baseId == MORTAL_STRIKE_1)
                 if (AuraEffect const* jugg = me->GetAuraEffect(JUGGERNAUGHT_BUFF, 0))
-                    if (jugg->IsAffectedOnSpell(spell))
+                    if (jugg->IsAffectingSpell(spell))
                         me->RemoveAurasDueToSpell(JUGGERNAUGHT_BUFF);
 
             if (baseId == THUNDER_CLAP_1 && lvl >= 10)
