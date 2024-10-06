@@ -103,6 +103,7 @@ class TC_GAME_API BotMgr
         static bool IsNpcBotModEnabled();
         static bool IsNpcBotLogEnabled();
         static bool IsNpcBotDungeonFinderEnabled();
+        static bool IsNpcBotsPremadeEnabled();
         static bool DisplayEquipment();
         static bool ShowEquippedCloak();
         static bool ShowEquippedHelm();
