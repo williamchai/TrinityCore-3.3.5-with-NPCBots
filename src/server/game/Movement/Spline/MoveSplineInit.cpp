@@ -119,7 +119,7 @@ namespace Movement
                     args.velocity *= 0.66f;
 
             //npcbot: do not emit an error if unit cannot move at all
-            if (!unit->CanFreeMove() && !(args.velocity > 0.01f))
+            if ((unit->IsNPCBotOrPet() || !unit->CanFreeMove()) && !(args.velocity > 0.01f))
                 return 0;
             //end npcbot
         }
