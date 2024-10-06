@@ -18426,6 +18426,7 @@ bool bot_ai::FinishTeleport(bool reset)
             GetHomePosition(mapid, &pos);
         if (BotMgr::HideBotSpawns() && !CanAppearInWorld() && me->GetMapId() == mapid && me->GetExactDist2d(pos) < 10.0f)
         {
+            AbortTeleport();
             TeleportFinishEvent* delayedTeleportEvent = new TeleportFinishEvent(this, reset);
             std::chrono::milliseconds delay(urand(5000, 8000));
             Events.AddEvent(delayedTeleportEvent, Events.CalculateTime(delay));
