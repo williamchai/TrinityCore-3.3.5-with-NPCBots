@@ -13354,7 +13354,7 @@ float bot_ai::_getTotalBotStat(BotStatMods stat) const
 
     uint8 lvl = me->GetLevel();
     Stats fstat = STAT_STRENGTH;
-    UnitMods fmod = UNIT_MOD_STAT_STRENGTH;
+    UnitMods fmod = UNIT_MOD_END;
     float fpct = 0.0f;
     float fval = float(value);
 
@@ -13585,9 +13585,12 @@ float bot_ai::_getTotalBotStat(BotStatMods stat) const
             break;
     }
 
-    fpct += me->GetPctModifierValue(fmod, TOTAL_PCT);
-    fval *= fpct;
-    fval += me->GetTotalStatValue(fstat);
+    if (fmod != UNIT_MOD_END)
+    {
+        fpct += me->GetPctModifierValue(fmod, TOTAL_PCT);
+        fval *= fpct;
+        fval += me->GetTotalStatValue(fstat);
+    }
     return fval;
 }
 
