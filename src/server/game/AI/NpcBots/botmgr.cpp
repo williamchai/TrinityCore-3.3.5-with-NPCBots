@@ -280,7 +280,7 @@ BotMgr::~BotMgr()
 
 void BotMgr::LoadData()
 {
-    ASSERT(!_data, "Trying to load player {} data a second time", _owner->GetGUID().GetCounter());
+    ASSERT(!_data, "Trying to load player %u data a second time", _owner->GetGUID().GetCounter());
     _data = BotDataMgr::SelectOrCreateNpcBotMgrData(_owner->GetGUID());
 }
 
