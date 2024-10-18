@@ -2397,7 +2397,7 @@ void bot_ai::SetStats(bool force)
         case DRUID_TREE_FORM:
         case DRUID_TRAVEL_FORM:
         case DRUID_AQUATIC_FORM:
-        //case DRUID_FLIGHT_FORM:
+        case DRUID_FLIGHT_FORM:
         case BOT_CLASS_BM:
         case BOT_CLASS_SPHYNX:
         case BOT_CLASS_ARCHMAGE:
@@ -2468,7 +2468,7 @@ void bot_ai::SetStats(bool force)
         case DRUID_TREE_FORM:
         case DRUID_TRAVEL_FORM:
         case DRUID_AQUATIC_FORM:
-        //case DRUID_FLIGHT_FORM:
+        case DRUID_FLIGHT_FORM:
             strmult = 2.f; agimult = 0.f; break;
         case BOT_CLASS_BM:
             strmult = 0.f; agimult = 9.f; break;
@@ -4579,7 +4579,7 @@ bool bot_ai::CheckAttackTarget()
                 case DRUID_TREE_FORM:
                 case DRUID_TRAVEL_FORM:
                 case DRUID_AQUATIC_FORM:
-                //case DRUID_FLIGHT_FORM:
+                case DRUID_FLIGHT_FORM:
                     ranged = true;
                     break;
                 case DRUID_MOONKIN_FORM:
@@ -5854,19 +5854,24 @@ uint32 bot_ai::_selectMountSpell() const
         }
         else //if (can_fly)
         {
-            static const MountArray MOUNTS_150_ALLIANCE = { BOT_MOUNT_FLY_ALLIANCE_150_1, BOT_MOUNT_FLY_ALLIANCE_150_2, BOT_MOUNT_FLY_ALLIANCE_150_3 };
-            static const MountArray MOUNTS_150_HORDE = { BOT_MOUNT_FLY_HORDE_150_1, BOT_MOUNT_FLY_HORDE_150_2, BOT_MOUNT_FLY_HORDE_150_3 };
-            static const MountArray MOUNTS_280_ALLIANCE = { BOT_MOUNT_FLY_ALLIANCE_280_1, BOT_MOUNT_FLY_ALLIANCE_280_2, BOT_MOUNT_FLY_ALLIANCE_280_3 };
-            static const MountArray MOUNTS_280_HORDE = { BOT_MOUNT_FLY_HORDE_280_1, BOT_MOUNT_FLY_HORDE_280_2, BOT_MOUNT_FLY_HORDE_280_3 };
+            if (GetBotClass() == BOT_CLASS_DRUID && GetSpell(33943))
+                myMountSpellId = useSlowMount ? 33943 : GetSpell(33943);
+            else
+            {
+                static const MountArray MOUNTS_150_ALLIANCE = { BOT_MOUNT_FLY_ALLIANCE_150_1, BOT_MOUNT_FLY_ALLIANCE_150_2, BOT_MOUNT_FLY_ALLIANCE_150_3 };
+                static const MountArray MOUNTS_150_HORDE = { BOT_MOUNT_FLY_HORDE_150_1, BOT_MOUNT_FLY_HORDE_150_2, BOT_MOUNT_FLY_HORDE_150_3 };
+                static const MountArray MOUNTS_280_ALLIANCE = { BOT_MOUNT_FLY_ALLIANCE_280_1, BOT_MOUNT_FLY_ALLIANCE_280_2, BOT_MOUNT_FLY_ALLIANCE_280_3 };
+                static const MountArray MOUNTS_280_HORDE = { BOT_MOUNT_FLY_HORDE_280_1, BOT_MOUNT_FLY_HORDE_280_2, BOT_MOUNT_FLY_HORDE_280_3 };
 
-            Optional<MountArray> myMounts;
-            if (me->GetRaceMask() & RACEMASK_ALLIANCE)
-                myMounts = useSlowMount ? MOUNTS_150_ALLIANCE : MOUNTS_280_ALLIANCE;
-            else if (me->GetRaceMask() & RACEMASK_HORDE)
-                myMounts = useSlowMount ? MOUNTS_150_HORDE : MOUNTS_280_HORDE;
+                Optional<MountArray> myMounts;
+                if (me->GetRaceMask() & RACEMASK_ALLIANCE)
+                    myMounts = useSlowMount ? MOUNTS_150_ALLIANCE : MOUNTS_280_ALLIANCE;
+                else if (me->GetRaceMask() & RACEMASK_HORDE)
+                    myMounts = useSlowMount ? MOUNTS_150_HORDE : MOUNTS_280_HORDE;
 
-            if (myMounts)
-                myMountSpellId = (*myMounts)[me->GetEntry() % myMounts->size()];
+                if (myMounts)
+                    myMountSpellId = (*myMounts)[me->GetEntry() % myMounts->size()];
+            }
         }
     }
 
@@ -5885,22 +5890,26 @@ void bot_ai::_updateMountedState()
     bool aura = me->HasAuraType(SPELL_AURA_MOUNTED);
     bool mounted = me->IsMounted() && (_botclass != BOT_CLASS_ARCHMAGE || aura);
     bool template_fly = me->GetCreatureTemplate()->Movement.Flight != CreatureFlightMovementType::None;
+    bool druid_fly = GetBotStance() == DRUID_FLIGHT_FORM;
     Unit const* victim = me->GetVictim();
 
     //allow dismount
-    if (!CanMount() && !aura && !mounted)
+    if (!CanMount() && !aura && !mounted && !druid_fly)
         return;
 
-    if ((aura || mounted || template_fly) &&
-        (!master->IsMounted() || aura != mounted || (!mounted && template_fly) ||
+    if ((aura || mounted || template_fly || druid_fly) &&
+        (!master->IsMounted() || aura != mounted || (!mounted && !druid_fly && template_fly) ||
             (me->IsInCombat() && (opponent || disttarget)) ||
             (IAmFree() && victim && me->IsWithinDist(victim, IsMelee() ? 5.0f : GetSpellAttackRange(true), false))))
     {
-        DismountBot();
+        if (druid_fly)
+            removeShapeshiftForm();
+        else
+            DismountBot();
         return;
     }
 
-    if (me->IsMounted() || me->GetVehicle() || me->HasUnitMovementFlag(MOVEMENTFLAG_SWIMMING) || !IsOutdoors() ||
+    if (druid_fly || me->IsMounted() || me->GetVehicle() || me->HasUnitMovementFlag(MOVEMENTFLAG_SWIMMING) || !IsOutdoors() ||
         master->IsInCombat() || me->IsInCombat() || me->GetVictim() || IsCasting() || IsFlagCarrier(me) ||
         (HasBotCommandState(BOT_COMMAND_STAY) && GetBG() && GetBG()->GetStatus() != STATUS_IN_PROGRESS))
         return;
@@ -7401,7 +7410,7 @@ void bot_ai::OnSpellHit(Unit* caster, SpellInfo const* spell)
     {
         uint32 const auraname = spell->_effects[i].ApplyAuraName;
         //remove pet on mount
-        if (auraname == SPELL_AURA_MOUNTED)
+        if (auraname == SPELL_AURA_MOUNTED || (!spell->HasAura(SPELL_AURA_MOUNTED) && auraname == SPELL_AURA_MOD_INCREASE_VEHICLE_FLIGHT_SPEED))
         {
             //TC_LOG_ERROR("entities.unit", "OnSpellHit: mount on {}", me->GetName());
             if (master->HasAuraType(SPELL_AURA_MOD_INCREASE_VEHICLE_FLIGHT_SPEED) ||
@@ -7419,7 +7428,8 @@ void bot_ai::OnSpellHit(Unit* caster, SpellInfo const* spell)
                     {
                         if (spell->_effects[j].ApplyAuraName != SPELL_AURA_MOD_INCREASE_VEHICLE_FLIGHT_SPEED &&
                             spell->_effects[j].ApplyAuraName != SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED &&
-                            spell->_effects[j].ApplyAuraName != SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED)
+                            spell->_effects[j].ApplyAuraName != SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED &&
+                            !(GetBotStance() == DRUID_FLIGHT_FORM && spell->_effects[j].ApplyAuraName == SPELL_AURA_MOD_INCREASE_SPEED))
                             continue;
                         if (AuraEffect* meff = mount->GetEffect(j))
                         {
