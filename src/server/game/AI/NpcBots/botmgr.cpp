@@ -1406,7 +1406,6 @@ void BotMgr::_reviveBot(Creature* bot, WorldLocation* dest)
     bot->ClearUnitState(UNIT_STATE_ALL_ERASABLE);
     bot->ReplaceAllUnitFlags(UnitFlags(0));
     bot->SetLootRecipient(nullptr);
-    bot->ResetPlayerDamageReq();
     bot->SetPvP(bot->GetBotOwner()->IsPvP());
     bot->Motion_Initialize();
     bot->setDeathState(ALIVE);
@@ -1417,6 +1416,9 @@ void BotMgr::_reviveBot(Creature* bot, WorldLocation* dest)
     bot->SetHealth(bot->GetMaxHealth() / restore_factor); //25% of max health
     if (bot->GetMaxPower(POWER_MANA) > 1)
         bot->SetPower(POWER_MANA, bot->GetMaxPower(POWER_MANA) / restore_factor); //25% of max mana
+
+    if (IsWanderingWorldBot(bot))
+        bot->ResetPlayerDamageReq();
 
     if (!bot->GetBotAI()->IAmFree() && !bot->GetBotAI()->HasBotCommandState(BOT_COMMAND_MASK_UNMOVING))
         bot->GetBotAI()->SetBotCommandState(BOT_COMMAND_FOLLOW, true);
@@ -1890,6 +1892,8 @@ BotAddResult BotMgr::AddBot(Creature* bot)
     bot->GetBotAI()->SetBotOwner(_owner);
 
     bot->GetBotAI()->Reset();
+
+    bot->LowerPlayerDamageReq(bot->GetMaxHealth());
 
     if (!bot->IsInWorld())
         TeleportBot(bot, _owner->GetMap(), _owner);

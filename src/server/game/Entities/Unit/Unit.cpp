@@ -915,6 +915,16 @@ bool Unit::HasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel) cons
 
     if (victim->GetTypeId() == TYPEID_PLAYER)
         victim->ToPlayer()->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_HIT_RECEIVED, damage);
+    //npcbot
+    else if (victim->IsNPCBotOrPet())
+    {
+        if (attacker && !victim->ToCreature()->hasLootRecipient())
+            victim->ToCreature()->SetLootRecipient(attacker);
+        if (!attacker || attacker->IsControlledByPlayer() || (attacker->ToTempSummon() && attacker->ToTempSummon()->GetSummonerUnit() && attacker->ToTempSummon()->GetSummonerUnit()->IsPlayer()) ||
+            (attacker->IsNPCBotOrPet() && !attacker->ToCreature()->IsFreeBot()) || (attacker->GetCreator() && attacker->GetCreator()->IsPlayer()))
+            victim->ToCreature()->LowerPlayerDamageReq(health < damage ?  health : damage);
+    }
+    //end npcbot
     else if (!victim->IsControlledByPlayer() || victim->IsVehicle())
     {
         if (!victim->ToCreature()->hasLootRecipient())
