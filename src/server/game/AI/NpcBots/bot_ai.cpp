@@ -18655,6 +18655,9 @@ WanderNode const* bot_ai::GetNextTravelNode(Position const* from, bool random) c
 
 WanderNode const* bot_ai::GetNextBGTravelNode() const
 {
+    using WanderNodeLink = WanderNode::WanderNodeLink;
+    using LinkWeightExtractor = WanderNodeLink::WeightExtractor;
+
     if (!me->GetMap()->IsBattleground() || !GetBG() || !GetGroup() || _travel_node_cur->GetLinks().size() <= 1)
         return nullptr;
 
@@ -18664,6 +18667,7 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
         case BATTLEGROUND_AV:
         {
             using NodeList = std::list<WanderNode const*>;
+            using NodeLinkList = std::list<WanderNodeLink>;
 
             constexpr uint32 CRETYPE_CAPTAIN_A = AV_CPLACE_MAX + 61;
             constexpr uint32 CRETYPE_CAPTAIN_H = AV_CPLACE_MAX + 59;
@@ -18678,17 +18682,14 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
             std::vector<Unit*> const team_members = BotMgr::GetAllGroupMembers(me);
             uint32 myTeam = myTeamId == TEAM_ALLIANCE ? ALLIANCE : HORDE;
             WanderNode const* curNode = _travel_node_cur;
-            NodeList links;
-            for (WanderNode const* wp : curNode->GetLinks())
+            NodeLinkList links;
+            for (WanderNodeLink const& wpl : curNode->GetLinks())
             {
-                if (BotDataMgr::IsWanderNodeAvailableForBotFaction(wp, faction, false))
-                    links.push_back(wp);
+                if (BotDataMgr::IsWanderNodeAvailableForBotFaction(wpl.wp, faction, false))
+                    links.push_back(wpl);
             }
             if (links.size() > 1 && _travel_node_last && !curNode->HasFlag(BotWPFlags::BOTWP_FLAG_CAN_BACKTRACK_FROM))
-                links.remove(_travel_node_last);
-
-            //if (links.size() == 1)
-            //    return links.front();
+                links.remove_if([=](WanderNodeLink const& wpl) { return wpl.Id() == _travel_node_last->GetWPId(); });
 
             BattlegroundAV* av = dynamic_cast<BattlegroundAV*>(bg);
             // Above all: check conditions to rush final boss
@@ -18767,9 +18768,9 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
                 {
                     auto const& pred = p.first == TEAM_ALLIANCE ? boss_room_wp_pred_a : boss_room_wp_pred_h;
                     WanderNode const* bossWP = ASSERT_NOTNULL(WanderNode::FindInAreaWPs(boss->GetAreaId(), pred));
-                    NodeList vlinks = curNode->GetShortestPathLinks(bossWP, links);
+                    NodeLinkList vlinks = curNode->GetShortestPathLinks(bossWP, links);
                     if (!vlinks.empty())
-                        return vlinks.size() == 1u ? vlinks.front() : Trinity::Containers::SelectRandomContainerElement(vlinks);
+                        return vlinks.size() == 1u ? vlinks.front().wp : Trinity::Containers::SelectRandomWeightedContainerElement(vlinks, LinkWeightExtractor())->wp;
                 }
             }
             // Secondly: check captain room to defend
@@ -18820,7 +18821,9 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
                 std::set<std::pair<uint8, BG_AV_NodeInfo const*>> defendable_nodes;
                 std::set<std::pair<uint32, BG_AV_NodeInfo const*>> assaulted_nodes;
                 std::set<std::pair<uint32, BG_AV_NodeInfo const*>> assaultable_nodes;
-                NodeList accessible_nodes = links; //copy
+                NodeList accessible_nodes;
+                for (WanderNodeLink const& alink : links)
+                    accessible_nodes.push_back(alink.wp);
                 accessible_nodes.push_back(curNode);
                 for (BG_AV_Nodes counter = BG_AV_NODES_FIRSTAID_STATION; counter < BG_AV_NODES_MAX; ++counter)
                 {
@@ -18863,9 +18866,9 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
                 });
                 if (WanderNode const* dnode = defNode.second)
                 {
-                    NodeList defLinks = curNode->GetShortestPathLinks(dnode, links);
+                    NodeLinkList defLinks = curNode->GetShortestPathLinks(dnode, links);
                     if (!defLinks.empty())
-                        return defLinks.size() == 1u ? defLinks.front() : Trinity::Containers::SelectRandomContainerElement(defLinks);
+                        return defLinks.size() == 1u ? defLinks.front().wp : Trinity::Containers::SelectRandomWeightedContainerElement(defLinks, LinkWeightExtractor())->wp;
                 }
                 WanderNode::DoForContainerWPs(accessible_nodes, [&](WanderNode const* wp) {
                     if (flag_wp_pred(wp))
@@ -18952,8 +18955,8 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
                     if (mboss->IsAlive() && !mboss->IsInCombat() && me->IsWithinDist2d(mboss, SIZE_OF_GRIDS * 0.75f))
                     {
                         WanderNode const* mineWP = ASSERT_NOTNULL(WanderNode::FindInMapWPs(mboss->GetMapId(), mine_pred));
-                        WanderNode const* mineLink = mineWP->GetLinks().front();
-                        NodeList mlinks = curNode->GetShortestPathLinks(mineWP, links);
+                        WanderNodeLink const& mineLink = mineWP->GetLinks().front();
+                        NodeLinkList mlinks = curNode->GetShortestPathLinks(mineWP, links);
                         if (!mlinks.empty())
                         {
                             uint32 attackers_count = 0;
@@ -18964,8 +18967,8 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
                                 WanderNode const* mwp = member->ToCreature()->GetBotAI()->_travel_node_cur;
                                 if (!mwp)
                                     continue;
-                                if (mwp == mineWP || mwp == mineLink || member->GetVictim() == mboss ||
-                                    std::find(mlinks.cbegin(), mlinks.cend(), mwp) != mlinks.cend() ||
+                                if (mwp == mineWP || mwp == mineLink.wp || member->GetVictim() == mboss ||
+                                    std::ranges::find_if(mlinks, [=](WanderNodeLink const& wpl) { return wpl.Id() == mwp->GetWPId(); }) != mlinks.cend() ||
                                     (!mwp->GetLinks().empty() && std::find(mwp->GetLinks().cbegin(), mwp->GetLinks().cend(), mineLink) != mwp->GetLinks().cend()))
                                     ++attackers_count;
                             }
@@ -18973,7 +18976,7 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
                             {
                                 TC_LOG_DEBUG("npcbots", "Bot {} {} team {} goes for a mine! Cur node: {} {}",
                                     me->GetName(), me->GetEntry(), uint32(myTeamId), curNode->GetWPId(), curNode->GetName());
-                                return mlinks.size() == 1u ? mlinks.front() : Trinity::Containers::SelectRandomContainerElement(mlinks);
+                                return mlinks.size() == 1u ? mlinks.front().wp : Trinity::Containers::SelectRandomWeightedContainerElement(mlinks, LinkWeightExtractor())->wp;
                             }
                         }
                     }
@@ -19010,9 +19013,9 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
                 {
                     auto const& pred = teamId == TEAM_ALLIANCE ? boss_room_wp_pred_h : boss_room_wp_pred_a;
                     WanderNode const* bossWP = ASSERT_NOTNULL(WanderNode::FindInAreaWPs(boss->GetAreaId(), pred));
-                    NodeList vlinks = curNode->GetShortestPathLinks(bossWP->GetLinks().front(), links);
+                    NodeLinkList vlinks = curNode->GetShortestPathLinks(bossWP->GetLinks().front().wp, links);
                     if (!vlinks.empty())
-                        return vlinks.size() == 1u ? vlinks.front() : Trinity::Containers::SelectRandomContainerElement(vlinks);
+                        return vlinks.size() == 1u ? vlinks.front().wp : Trinity::Containers::SelectRandomWeightedContainerElement(vlinks, LinkWeightExtractor())->wp;
                 }
             }
 
