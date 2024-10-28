@@ -14360,7 +14360,7 @@ void bot_ai::DefaultInit()
 
     if (IsWanderer())
     {
-        _travel_node_cur = ASSERT_NOTNULL(BotDataMgr::GetClosestWanderNode(me));
+        _travel_node_cur = ASSERT_NOTNULL(GetClosestWanderNode());
         if (firstspawn && BotMgr::IsWanderingWorldBot(me))
             StartPotionTimer();
     }
@@ -18332,18 +18332,20 @@ void bot_ai::Evade()
                     float angle = Position::NormalizeOrientation(me->GetRelativeAngle(nextNode) + frand(float(-M_PI_2), float(M_PI_2)));
                     Position cnpos = me->GetFirstCollisionPosition(frand(8.0f, 15.0f), angle);
                     homepos.Relocate(cnpos);
+                    evadeDelayTimer = urand(4000, 6000);
                 }
                 else
+                {
                     homepos.Relocate(nextNode);
+                    if (me->GetMap()->GetEntry()->IsContinent())
+                        evadeDelayTimer = urand(3000, 7000);
+                    else
+                        evadeDelayTimer = 0;
+                }
 
                 TC_LOG_TRACE("npcbots", "Bot {} id {} class {} level {} wandered from node {} to {}, next {} ('{}'), {}, dist {} yd!",
                     me->GetName(), me->GetEntry(), uint32(_botclass), uint32(me->GetLevel()), _travel_node_last ? _travel_node_last->GetWPId() : 0, _travel_node_cur->GetWPId(),
                     nextNode->GetWPId(), nextNode->GetName(), homepos.ToString(), pos.GetExactDist(homepos));
-
-                if (me->GetMap()->GetEntry()->IsContinent())
-                    evadeDelayTimer = urand(3000, 7000);
-                else if (nextNode == _travel_node_cur)
-                    evadeDelayTimer = urand(4000, 6000);
 
                 _travel_node_last = _travel_node_cur;
                 _travel_node_cur = nextNode;
@@ -18630,20 +18632,165 @@ void bot_ai::GetHomePosition(uint16& mapid, Position* pos) const
     }
 }
 
+//WANDER NODES
+/*static */bool bot_ai::IsWanderNodeAvailableForBotFaction(WanderNode const* wp, uint32 factionTemplateId, bool teleport)
+{
+    if (!teleport)
+    {
+        if (wp->HasFlag(BotWPFlags::BOTWP_FLAG_MOVEMENT_IGNORES_FACTION))
+            return true;
+    }
+    else
+    {
+        MapEntry const* mapEntry = sMapStore.LookupEntry(wp->GetMapId());
+        if (!mapEntry->IsContinent())
+            return false;
+    }
+
+    switch (BotDataMgr::GetTeamIdForFaction(factionTemplateId))
+    {
+        case TEAM_ALLIANCE:
+            return !wp->HasFlag(BotWPFlags::BOTWP_FLAG_HORDE_ONLY);
+        case TEAM_HORDE:
+            return !wp->HasFlag(BotWPFlags::BOTWP_FLAG_ALLIANCE_ONLY);
+        case TEAM_NEUTRAL:
+            return !wp->HasFlag(BotWPFlags::BOTWP_FLAG_ALLIANCE_OR_HORDE_ONLY);
+        default:
+            return true;
+    }
+}
+
+WanderNode const* bot_ai::GetClosestWanderNode() const
+{
+    float mindist = 50000.0f;
+    WanderNode const* closestNode = nullptr;
+    WanderNode::DoForAllMapWPs(me->GetMapId(), [&mindist, &closestNode, loc = me](WanderNode const* wp) {
+        float dist = wp->GetExactDist2d(loc);
+        if (dist < mindist)
+        {
+            mindist = dist;
+            closestNode = wp;
+        }
+    });
+
+    return closestNode;
+}
+
+WanderNode const* bot_ai::GetNextWanderNode(Position const* fromPos, uint8 lvl, bool random) const
+{
+    using NodeList = std::list<WanderNode const*>;
+    using WanderNodeLink = WanderNode::WanderNodeLink;
+    using NodeLinkList = std::list<WanderNodeLink const*>;
+    using LinkWeightExtractor = WanderNodeLink::WeightExtractor;
+
+    static auto node_viable = [](WanderNode const* wp, uint8 lvl) -> bool {
+        return (lvl + 2 >= wp->GetLevels().first && lvl <= wp->GetLevels().second);
+    };
+
+    uint32 faction = me->GetFaction();
+
+    //Node got deleted (or forced)! Select close point and go from there
+    NodeList nlinks;
+    if (_travel_node_cur->GetLinks().empty() || random)
+    {
+        if (me->IsInWorld() && !me->GetMap()->IsBattlegroundOrArena())
+        {
+            WanderNode::DoForAllMapWPs(_travel_node_cur->GetMapId(), [&nlinks, lvl = lvl, fac = faction, pos = fromPos](WanderNode const* wp) {
+                if (pos->GetExactDist2d(wp) < MAX_WANDER_NODE_DISTANCE && IsWanderNodeAvailableForBotFaction(wp, fac, true) && node_viable(wp, lvl))
+                    nlinks.push_back(wp);
+            });
+            if (!nlinks.empty())
+                return nlinks.size() == 1u ? nlinks.front() : Trinity::Containers::SelectRandomContainerElement(nlinks);
+        }
+
+        //Select closest
+        WanderNode const* node_new = nullptr;
+        float mindist = 50000.0f; // Anywhere
+        WanderNode::DoForAllMapWPs(_travel_node_cur->GetMapId(), [&node_new, &mindist, lvl = lvl, fac = faction, pos = fromPos](WanderNode const* wp) {
+            float dist = pos->GetExactDist2d(wp);
+            if (dist < mindist && IsWanderNodeAvailableForBotFaction(wp, fac, false) && node_viable(wp, lvl))
+            {
+                mindist = dist;
+                node_new = wp;
+            }
+        });
+        return node_new;
+    }
+
+    if (bot_ai::IsFlagCarrier(me))
+    {
+        NodeLinkList flagDropNodes;
+        TeamId teamId = BotDataMgr:: GetTeamIdForFaction(faction);
+        static const auto is_my_flag_drop_node = [](WanderNode const* dwp, TeamId tId) {
+            if (dwp->HasFlag(BotWPFlags::BOTWP_FLAG_BG_FLAG_DELIVER_TARGET))
+            {
+                //must only select own faction drop node
+                return (!dwp->HasFlag(BotWPFlags::BOTWP_FLAG_ALLIANCE_OR_HORDE_ONLY) ||
+                    (tId == TEAM_ALLIANCE && dwp->HasFlag(BotWPFlags::BOTWP_FLAG_ALLIANCE_ONLY)) ||
+                    (tId == TEAM_HORDE && dwp->HasFlag(BotWPFlags::BOTWP_FLAG_HORDE_ONLY)));
+            }
+            return false;
+        };
+        //check two levels of links, enough for: WSG
+        for (auto const& dwp : _travel_node_cur->GetLinks())
+        {
+            if (is_my_flag_drop_node(dwp.wp, teamId))
+                flagDropNodes.push_back(&dwp);
+            else
+            {
+                for (auto const& dwpl : dwp.wp->GetLinks())
+                {
+                    if (dwpl.wp != _travel_node_cur && is_my_flag_drop_node(dwpl.wp, teamId))
+                    {
+                        flagDropNodes.push_back(&dwpl);
+                        break;
+                    }
+                }
+            }
+        }
+        if (!flagDropNodes.empty())
+        {
+            WanderNodeLink const* wpl = flagDropNodes.size() == 1u ? flagDropNodes.front() : *Trinity::Containers::SelectRandomWeightedContainerElement(flagDropNodes, LinkWeightExtractor());
+            return wpl->wp;
+        }
+    }
+
+    NodeLinkList llinks;
+    for (auto const& wpl : _travel_node_cur->GetLinks())
+    {
+        if (IsWanderNodeAvailableForBotFaction(wpl.wp, faction, false) && node_viable(wpl.wp, lvl))
+            llinks.push_back(&wpl);
+    }
+    if (llinks.size() > 1 && _travel_node_last && !_travel_node_cur->HasFlag(BotWPFlags::BOTWP_FLAG_CAN_BACKTRACK_FROM))
+        llinks.remove_if([=](WanderNodeLink const* wpl) { return wpl->wp == _travel_node_last; });
+    if (!llinks.empty())
+    {
+        WanderNodeLink const* wpl = llinks.size() == 1u ? llinks.front() : *Trinity::Containers::SelectRandomWeightedContainerElement(llinks, LinkWeightExtractor());
+        return wpl->wp;
+    }
+
+    //Overleveled or died: no viable nodes in reach, find one for teleport
+    WanderNode::DoForAllWPs([&nlinks, lvl = lvl, fac = faction](WanderNode const* wp) {
+        if (IsWanderNodeAvailableForBotFaction(wp, fac, true) && wp->HasFlag(BotWPFlags::BOTWP_FLAG_SPAWN) && node_viable(wp, lvl))
+            nlinks.push_back(wp);
+    });
+
+    ASSERT(!nlinks.empty());
+    return nlinks.size() == 1u ? nlinks.front() : Trinity::Containers::SelectRandomContainerElement(nlinks);
+}
+
 WanderNode const* bot_ai::GetNextTravelNode(Position const* from, bool random) const
 {
-    ASSERT(IsWanderer());
-
-    int8 mylevelbonus = BotDataMgr::GetLevelBonusForBotRank(me->GetCreatureTemplate()->rank);
-    uint8 mylevelbase = std::max<int8>(int8(me->GetLevel()) - mylevelbonus, int8(BotDataMgr::GetMinLevelForBotClass(_botclass)));
-
     if (!random)
     {
         if (WanderNode const* bgNode = GetNextBGTravelNode())
             return bgNode;
     }
 
-    return BotDataMgr::GetNextWanderNode(_travel_node_cur, _travel_node_last, from, me, mylevelbase, random);
+    int8 mylevelbonus = BotDataMgr::GetLevelBonusForBotRank(me->GetCreatureTemplate()->rank);
+    uint8 mylevelbase = std::max<int8>(int8(me->GetLevel()) - mylevelbonus, int8(BotDataMgr::GetMinLevelForBotClass(_botclass)));
+
+    return GetNextWanderNode(from, mylevelbase, random);
 }
 
 WanderNode const* bot_ai::GetNextBGTravelNode() const
@@ -18678,7 +18825,7 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
             NodeLinkList links;
             for (WanderNodeLink const& wpl : curNode->GetLinks())
             {
-                if (BotDataMgr::IsWanderNodeAvailableForBotFaction(wpl.wp, faction, false))
+                if (bot_ai::IsWanderNodeAvailableForBotFaction(wpl.wp, faction, false))
                     links.push_back(wpl);
             }
             if (links.size() > 1 && _travel_node_last && !curNode->HasFlag(BotWPFlags::BOTWP_FLAG_CAN_BACKTRACK_FROM))
@@ -18778,7 +18925,7 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
                     float mindist = 50000.0f;
                     WanderNode::DoForAllAreaWPs(captain->GetAreaId(), [&cap_node, &mindist, fac = faction, pos = captain](WanderNode const* wp) {
                         float dist = pos->GetExactDist2d(wp);
-                        if (dist < mindist && BotDataMgr::IsWanderNodeAvailableForBotFaction(wp, fac, false))
+                        if (dist < mindist && bot_ai::IsWanderNodeAvailableForBotFaction(wp, fac, false))
                         {
                             mindist = dist;
                             cap_node = wp;
@@ -18987,7 +19134,7 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
                     float mindist = 50000.0f;
                     WanderNode::DoForAllAreaWPs(captain->GetAreaId(), [&cap_node, &mindist, fac = faction, pos = captain](WanderNode const* wp) {
                         float dist = pos->GetExactDist2d(wp);
-                        if (dist < mindist && BotDataMgr::IsWanderNodeAvailableForBotFaction(wp, fac, false))
+                        if (dist < mindist && bot_ai::IsWanderNodeAvailableForBotFaction(wp, fac, false))
                         {
                             mindist = dist;
                             cap_node = wp;
@@ -19021,7 +19168,9 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
             break;
         }
         case BATTLEGROUND_WS:
+            break;
         case BATTLEGROUND_AB:
+            break;
         default:
             break;
     }
@@ -19056,7 +19205,7 @@ void bot_ai::OnWanderNodeReached()
             {
                 case BATTLEGROUND_AV:
                 {
-                    static const uint32 SPELL_OPENING_FLAG = 21651u;
+                    static const uint32 SPELL_OPENING_FLAG_AV = 21651u;
 
                     GameObject* obj = nullptr;
 
@@ -19088,7 +19237,7 @@ void bot_ai::OnWanderNodeReached()
                             continue;
                         if (Spell const* curSpell = member->GetCurrentSpell(CURRENT_GENERIC_SPELL))
                         {
-                            if (curSpell->m_spellInfo->Id == SPELL_OPENING_FLAG && curSpell->m_targets.GetGOTargetGUID() == obj->GetGUID())
+                            if (curSpell->m_spellInfo->Id == SPELL_OPENING_FLAG_AV && curSpell->m_targets.GetGOTargetGUID() == obj->GetGUID())
                             {
                                 already_used = true;
                                 break;
@@ -19102,7 +19251,7 @@ void bot_ai::OnWanderNodeReached()
 
                     if (me->IsMounted())
                         DismountBot();
-                    me->CastSpell(obj, SPELL_OPENING_FLAG);
+                    me->CastSpell(obj, SPELL_OPENING_FLAG_AV);
 
                     break;
                 }
@@ -19132,7 +19281,7 @@ void bot_ai::OnWanderNodeReached()
                 }
                 case BATTLEGROUND_AB:
                 {
-                    static const uint32 SPELL_OPENING_FLAG = 21651u;
+                    static const uint32 SPELL_OPENING_FLAG_AB = 21651u;
 
                     uint8 node = BG_AB_NODE_STABLES;
                     GameObject* obj = bg->GetBGObject(node*8+BG_AB_OBJECT_BANNER_NEUTRAL);
@@ -19158,8 +19307,7 @@ void bot_ai::OnWanderNodeReached()
                         else
                             new_bg_obj_type = BG_AB_OBJECT_BANNER_NEUTRAL;
 
-                        obj = bg->GetBGObject(node*8+new_bg_obj_type);
-                        ASSERT(obj != nullptr);
+                        obj = ASSERT_NOTNULL(bg->GetBGObject(node*8+new_bg_obj_type));
 
                         bool already_used = false;
                         for (Unit const* member : BotMgr::GetAllGroupMembers(me))
@@ -19168,7 +19316,7 @@ void bot_ai::OnWanderNodeReached()
                                 continue;
                             if (Spell const* curSpell = member->GetCurrentSpell(CURRENT_GENERIC_SPELL))
                             {
-                                if (curSpell->m_spellInfo->Id == SPELL_OPENING_FLAG && curSpell->m_targets.GetGOTargetGUID() == obj->GetGUID())
+                                if (curSpell->m_spellInfo->Id == SPELL_OPENING_FLAG_AB && curSpell->m_targets.GetGOTargetGUID() == obj->GetGUID())
                                 {
                                     already_used = true;
                                     break;
@@ -19178,11 +19326,10 @@ void bot_ai::OnWanderNodeReached()
                         if (already_used)
                             break;
 
-                        //TC_LOG_ERROR("npcbots", "OnWanderNodeReached: [AB] Bot {} USES flag {} at node {}",
-                        //    me->GetName(), obj->GetName(), uint32(node));
+                        //TC_LOG_ERROR("npcbots", "OnWanderNodeReached: [AB] Bot {} USES flag {} at node {}", me->GetName(), obj->GetName(), uint32(node));
                         if (me->IsMounted())
                             DismountBot();
-                        me->CastSpell(obj, SPELL_OPENING_FLAG);
+                        me->CastSpell(obj, SPELL_OPENING_FLAG_AB);
                     }
                     break;
                 }
@@ -19199,11 +19346,19 @@ void bot_ai::OnBotEnterBattleground()
 
     if (bg->GetStatus() != STATUS_IN_PROGRESS && IsWanderer())
     {
+        BotWPFlags myTeamSpawnFlags;
+        switch (bg->GetBotTeamId(me->GetGUID()))
+        {
+            case TEAM_ALLIANCE: myTeamSpawnFlags = BotWPFlags::BOTWP_FLAG_ALLIANCE_SPAWN_POINT; break;
+            case TEAM_HORDE:    myTeamSpawnFlags = BotWPFlags::BOTWP_FLAG_HORDE_SPAWN_POINT;    break;
+            default:            myTeamSpawnFlags = BotWPFlags::BOTWP_FLAG_SPAWN;                break;
+        }
+
         uint32 mapId = bg->GetBgMap()->GetId();
         float mindist = 50000.0f;
         WanderNode const* startNode = nullptr;
-        WanderNode::DoForAllMapWPs(mapId, [pos = me->GetPosition(), &mindist, &startNode](WanderNode const* wp) {
-            if (wp->HasFlag(BotWPFlags::BOTWP_FLAG_SPAWN))
+        WanderNode::DoForAllMapWPs(mapId, [pos = me->GetPosition(), spawnFlags = myTeamSpawnFlags, &mindist, &startNode](WanderNode const* wp) {
+            if (wp->HasFlag(spawnFlags))
             {
                 float dist = pos.GetExactDist2d(wp);
                 if (dist < mindist)
