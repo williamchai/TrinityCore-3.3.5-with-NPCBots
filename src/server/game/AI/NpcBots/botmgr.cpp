@@ -1816,7 +1816,7 @@ BotAddResult BotMgr::AddBot(Creature* bot)
     if (!_enableNpcBots)
     {
         ChatHandler ch(_owner->GetSession());
-        ch.SendSysMessage(bot_ai::LocalizedNpcText(GetOwner(), BOT_TEXT_BOTADDFAIL_DISABLED).c_str());
+        ch.SendSysMessage(bot_ai::LocalizedNpcText(GetOwner(), BOT_TEXT_BOTADDFAIL_DISABLED));
         return BOT_ADD_DISABLED;
     }
     if (GetBot(bot->GetGUID()))
@@ -1824,8 +1824,7 @@ BotAddResult BotMgr::AddBot(Creature* bot)
     if (!bot->GetBotAI()->IAmFree())
     {
         ChatHandler ch(_owner->GetSession());
-        ch.PSendSysMessage(bot_ai::LocalizedNpcText(GetOwner(), BOT_TEXT_BOTADDFAIL_OWNED).c_str(),
-            bot->GetName().c_str(), bot->GetBotOwner()->GetName().c_str());
+        ch.PSendSysMessage(bot_ai::LocalizedNpcText(GetOwner(), BOT_TEXT_BOTADDFAIL_OWNED).c_str(), bot->GetName(), bot->GetBotOwner()->GetName());
         return BOT_ADD_NOT_AVAILABLE;
     }
     if (!owned && owned_count >= GetMaxNpcBots(_owner->GetLevel()))
@@ -1861,7 +1860,7 @@ BotAddResult BotMgr::AddBot(Creature* bot)
             std::string str = bot_ai::LocalizedNpcText(GetOwner(), BOT_TEXT_HIREFAIL_COST) + " (";
             str += GetNpcBotCostStr(_owner->GetLevel(), bot->GetBotClass());
             str += ")!";
-            ch.SendSysMessage(str.c_str());
+            ch.SendSysMessage(str);
             return BOT_ADD_CANT_AFFORD;
         }
 

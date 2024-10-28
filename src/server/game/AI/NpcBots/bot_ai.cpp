@@ -2315,7 +2315,7 @@ void bot_ai::_listAuras(Player const* player, Unit const* unit) const
         //}
     }
 
-    ch.SendSysMessage(botstring.str().c_str());
+    ch.SendSysMessage(botstring.str());
 }
 //SetStats
 // Health, Armor, Powers, Combat Ratings, and global update setup
@@ -3534,8 +3534,8 @@ void bot_ai::ReceiveEmote(Player* player, uint32 emote)
             }
 
             me->BotStopMovement();
-            me->TextEmote(LocalizedNpcText(player, BOT_TEXT_BOT_TICKLED).c_str());
-            ChatHandler(player->GetSession()).SendSysMessage(report.str().c_str());
+            me->TextEmote(LocalizedNpcText(player, BOT_TEXT_BOT_TICKLED));
+            ChatHandler(player->GetSession()).SendSysMessage(report.str());
             break;
         }
         default:
@@ -7840,12 +7840,9 @@ bool bot_ai::OnGossipHello(Player* player, uint32 /*option*/)
             }
 
             if (!reason)
-            {
-                player->PlayerTalkClass->GetGossipMenu().AddMenuItem(-1, GOSSIP_ICON_TAXI, message2.str().c_str(),
-                    GOSSIP_SENDER_HIRE, GOSSIP_ACTION_INFO_DEF + 0, message1.str().c_str(), cost, false);
-            }
+                player->PlayerTalkClass->GetGossipMenu().AddMenuItem(-1, GOSSIP_ICON_TAXI, message2.str(), GOSSIP_SENDER_HIRE, GOSSIP_ACTION_INFO_DEF + 0, message1.str(), cost, false);
             else
-                AddGossipItemFor(player, GOSSIP_ICON_TAXI, message2.str().c_str(), GOSSIP_SENDER_HIRE, GOSSIP_ACTION_INFO_DEF + reason);
+                AddGossipItemFor(player, GOSSIP_ICON_TAXI, message2.str(), GOSSIP_SENDER_HIRE, GOSSIP_ACTION_INFO_DEF + reason);
 
             menus = true;
         }
@@ -7916,7 +7913,7 @@ bool bot_ai::OnGossipHello(Player* player, uint32 /*option*/)
                     {
                         std::ostringstream msg;
                         msg << LocalizedNpcText(player, BOT_TEXT_ROGUE_PICKLOCK) << " (" << uint32(me->GetLevel() * 5) << ")";
-                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, msg.str().c_str(), GOSSIP_SENDER_CLASS, GOSSIP_ACTION_INFO_DEF + 1);
+                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, msg.str(), GOSSIP_SENDER_CLASS, GOSSIP_ACTION_INFO_DEF + 1);
                         menus = true;
                     }
                     break;
@@ -7995,7 +7992,7 @@ bool bot_ai::OnGossipHello(Player* player, uint32 /*option*/)
             std::ostringstream astr;
             astr << LocalizedNpcText(player, BOT_TEXT_ABANDON_WARN_1) << me->GetName() << "? " << (BotMgr::IsEnrageOnDimissEnabled() ? LocalizedNpcText(player, BOT_TEXT_ABANDON_WARN_2) : "");
             player->PlayerTalkClass->GetGossipMenu().AddMenuItem(-1, GOSSIP_ICON_TAXI, LocalizedNpcText(player, BOT_TEXT_UR_DISMISSED),
-                GOSSIP_SENDER_DISMISS, GOSSIP_ACTION_INFO_DEF + 1, astr.str().c_str(), 0, false);
+                GOSSIP_SENDER_DISMISS, GOSSIP_ACTION_INFO_DEF + 1, astr.str(), 0, false);
 
             AddGossipItemFor(player, GOSSIP_ICON_CHAT, LocalizedNpcText(player, BOT_TEXT_PULL_URSELF), GOSSIP_SENDER_TROUBLESHOOTING, GOSSIP_ACTION_INFO_DEF + 1);
         }
@@ -8229,7 +8226,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                         {
                             std::ostringstream msg;
                             msg << obj->GetGOInfo()->name << " (" << LocalizedNpcText(player, BOT_TEXT_DISTANCE_SHORT) << " = " << player->GetExactDist(obj) << ")";
-                            AddGossipItemFor(player, GOSSIP_ICON_CHAT, msg.str().c_str(), GOSSIP_SENDER_CLASS_ACTION1, GOSSIP_ACTION_INFO_DEF + ++count);
+                            AddGossipItemFor(player, GOSSIP_ICON_CHAT, msg.str(), GOSSIP_SENDER_CLASS_ACTION1, GOSSIP_ACTION_INFO_DEF + ++count);
                         }
 
                         //2 Inventory
@@ -8253,7 +8250,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                                     {
                                         std::ostringstream name;
                                         _AddItemLink(player, item, name, false);
-                                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, name.str().c_str(), GOSSIP_SENDER_CLASS_ACTION1, GOSSIP_ACTION_INFO_DEF + item->GetGUID().GetCounter());
+                                        AddGossipItemFor(player, GOSSIP_ICON_CHAT, name.str(), GOSSIP_SENDER_CLASS_ACTION1, GOSSIP_ACTION_INFO_DEF + item->GetGUID().GetCounter());
                                         break;
                                     }
                                 }
@@ -8280,7 +8277,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                                             {
                                                 std::ostringstream name;
                                                 _AddItemLink(player, item, name, false);
-                                                AddGossipItemFor(player, GOSSIP_ICON_CHAT, name.str().c_str(), GOSSIP_SENDER_CLASS_ACTION1, GOSSIP_ACTION_INFO_DEF + item->GetGUID().GetCounter());
+                                                AddGossipItemFor(player, GOSSIP_ICON_CHAT, name.str(), GOSSIP_SENDER_CLASS_ACTION1, GOSSIP_ACTION_INFO_DEF + item->GetGUID().GetCounter());
                                                 ++count;
                                                 break;
                                             }
@@ -8446,7 +8443,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                                     name = cinfo->Name;
                                 }
                                 bool same = possibleType == curType;
-                                AddGossipItemFor(player, same ? GOSSIP_ICON_BATTLE : GOSSIP_ICON_CHAT, name.c_str(), GOSSIP_SENDER_CLASS_ACTION4, GOSSIP_ACTION_INFO_DEF + possibleType);
+                                AddGossipItemFor(player, same ? GOSSIP_ICON_BATTLE : GOSSIP_ICON_CHAT, name, GOSSIP_SENDER_CLASS_ACTION4, GOSSIP_ACTION_INFO_DEF + possibleType);
                             }
                         }
                         bool noPet = curType == BOT_PET_INVALID;
@@ -8477,7 +8474,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                                 CreatureTemplate const* cinfo = sObjectMgr->GetCreatureTemplate(possibleType);
                                 ASSERT(cinfo);
                                 bool same = possibleType == curType;
-                                AddGossipItemFor(player, same ? GOSSIP_ICON_BATTLE : GOSSIP_ICON_CHAT, cinfo->Name.c_str(), GOSSIP_SENDER_CLASS_ACTION4, GOSSIP_ACTION_INFO_DEF + possibleType);
+                                AddGossipItemFor(player, same ? GOSSIP_ICON_BATTLE : GOSSIP_ICON_CHAT, cinfo->Name, GOSSIP_SENDER_CLASS_ACTION4, GOSSIP_ACTION_INFO_DEF + possibleType);
                             }
                         }
                         bool noPet = curType == BOT_PET_INVALID;
@@ -9190,7 +9187,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
 
                 str << " GS: " << uint32(CalculateItemGearScore(me->GetEntry(), me->GetLevel(), GetBotClass(), GetSpec(), slot, item->GetTemplate()));
 
-                AddGossipItemFor(player, GOSSIP_ICON_CHAT, str.str().c_str(), GOSSIP_SENDER_EQUIPMENT_INFO, action);
+                AddGossipItemFor(player, GOSSIP_ICON_CHAT, str.str(), GOSSIP_SENDER_EQUIPMENT_INFO, action);
 
                 if (!visual_only && BotMgr::DisplayEquipment() && BotMgr::IsTransmogEnabled() && slot < BOT_TRANSMOG_INVENTORY_SIZE && CanDisplayNonWeaponEquipmentChanges())
                     AddGossipItemFor(player, GOSSIP_ICON_TALK, LocalizedNpcText(player, BOT_TEXT_TRANSMOGRIFICATION), GOSSIP_SENDER_EQUIP_TRANSMOGS, action);
@@ -9198,7 +9195,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
             else
             {
                 str << LocalizedNpcText(player, BOT_TEXT_NOTHING);
-                AddGossipItemFor(player, GOSSIP_ICON_CHAT, str.str().c_str(), GOSSIP_SENDER_EQUIPMENT_SHOW, action);
+                AddGossipItemFor(player, GOSSIP_ICON_CHAT, str.str(), GOSSIP_SENDER_EQUIPMENT_SHOW, action);
             }
 
             if (_equips[slot])
@@ -9241,7 +9238,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                             name << " GS: " << uint32(CalculateItemGearScore(me->GetEntry(), me->GetLevel(), GetBotClass(), GetSpec(), slot, item->GetTemplate()));
                             if (BotMgr::SendEquipListItems())
                                 BotWhisper(name.str(), player);
-                            AddGossipItemFor(player, GOSSIP_ICON_CHAT, name.str().c_str(), GOSSIP_SENDER_EQUIP + slot, GOSSIP_ACTION_INFO_DEF + item->GetGUID().GetCounter());
+                            AddGossipItemFor(player, GOSSIP_ICON_CHAT, name.str(), GOSSIP_SENDER_EQUIP + slot, GOSSIP_ACTION_INFO_DEF + item->GetGUID().GetCounter());
                             ++counter;
                             found = true;
                             break;
@@ -9265,7 +9262,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                                     name << " GS: " << uint32(CalculateItemGearScore(me->GetEntry(), me->GetLevel(), GetBotClass(), GetSpec(), slot, item->GetTemplate()));
                                     if (BotMgr::SendEquipListItems())
                                         BotWhisper(name.str(), player);
-                                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, name.str().c_str(), GOSSIP_SENDER_EQUIP + slot, GOSSIP_ACTION_INFO_DEF + item->GetGUID().GetCounter());
+                                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, name.str(), GOSSIP_SENDER_EQUIP + slot, GOSSIP_ACTION_INFO_DEF + item->GetGUID().GetCounter());
                                     ++counter;
                                     found = true;
                                     break;
@@ -9504,7 +9501,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                             _AddItemLink(player, item, name);
                             if (BotMgr::SendEquipListItems())
                                 BotWhisper(name.str(), player);
-                            AddGossipItemFor(player, GOSSIP_ICON_CHAT, name.str().c_str(), GOSSIP_SENDER_EQUIP_AUTOEQUIP_EQUIP + k, GOSSIP_ACTION_INFO_DEF + item->GetGUID().GetCounter());
+                            AddGossipItemFor(player, GOSSIP_ICON_CHAT, name.str(), GOSSIP_SENDER_EQUIP_AUTOEQUIP_EQUIP + k, GOSSIP_ACTION_INFO_DEF + item->GetGUID().GetCounter());
                             ++counter;
                             found = true;
                             break;
@@ -9541,7 +9538,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                                     _AddItemLink(player, item, name);
                                     if (BotMgr::SendEquipListItems())
                                         BotWhisper(name.str(), player);
-                                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, name.str().c_str(), GOSSIP_SENDER_EQUIP_AUTOEQUIP_EQUIP + k, GOSSIP_ACTION_INFO_DEF + item->GetGUID().GetCounter());
+                                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, name.str(), GOSSIP_SENDER_EQUIP_AUTOEQUIP_EQUIP + k, GOSSIP_ACTION_INFO_DEF + item->GetGUID().GetCounter());
                                     ++counter;
                                     found = true;
                                     break;
@@ -9742,7 +9739,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                 std::ostringstream istr;
                 _AddItemLink(player, item, istr, false);
                 ChatHandler ch(player->GetSession());
-                ch.PSendSysMessage(LocalizedNpcText(player, BOT_TEXT_CANT_UNEQUIP_MAILING).c_str(), istr.str().c_str());
+                ch.PSendSysMessage(LocalizedNpcText(player, BOT_TEXT_CANT_UNEQUIP_MAILING).c_str(), istr.str());
 
                 item->SetOwnerGUID(player->GetGUID());
 
@@ -9934,7 +9931,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                 std::ostringstream name;
                 name << LocalizedNpcText(player, BOT_TEXT_USE_);
                 _AddSpellLink(player, spellInfo, name);
-                AddGossipItemFor(player, GOSSIP_ICON_TRAINER, name.str().c_str(), GOSSIP_SENDER_ABILITIES_USE, GOSSIP_ACTION_INFO_DEF + basespell);
+                AddGossipItemFor(player, GOSSIP_ICON_TRAINER, name.str(), GOSSIP_SENDER_ABILITIES_USE, GOSSIP_ACTION_INFO_DEF + basespell);
             }
 
             AddGossipItemFor(player, GOSSIP_ICON_CHAT, LocalizedNpcText(player, BOT_TEXT_UPDATE), sender, action);
@@ -10041,7 +10038,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                 _AddSpellLink(player, spellInfo, name);
 
                 GossipOptionIcon icon = (GetSpell(*itr) != 0) ? BOT_ICON_ON : BOT_ICON_OFF;
-                AddGossipItemFor(player, icon, name.str().c_str(), toggleSender, GOSSIP_ACTION_INFO_DEF + *itr);
+                AddGossipItemFor(player, icon, name.str(), toggleSender, GOSSIP_ACTION_INFO_DEF + *itr);
                 if (++counter >= BOT_GOSSIP_MAX_ITEMS - 1) //back
                 {
                     TC_LOG_ERROR("scripts", "bot_ai: gossip abilities list overflow with sender {} for bot class {}!",
@@ -10232,7 +10229,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                 {
                     std::ostringstream name;
                     _AddItemLink(player, item, name);
-                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, name.str().c_str(), GOSSIP_SENDER_USEITEM_USE, GOSSIP_ACTION_INFO_DEF + item->GetGUID().GetCounter());
+                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, name.str(), GOSSIP_SENDER_USEITEM_USE, GOSSIP_ACTION_INFO_DEF + item->GetGUID().GetCounter());
                     ++counter; //no need to check max counter here
                 }
             }
@@ -10248,7 +10245,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                         {
                             std::ostringstream name;
                             _AddItemLink(player, item, name);
-                            AddGossipItemFor(player, GOSSIP_ICON_CHAT, name.str().c_str(), GOSSIP_SENDER_USEITEM_USE, GOSSIP_ACTION_INFO_DEF + item->GetGUID().GetCounter());
+                            AddGossipItemFor(player, GOSSIP_ICON_CHAT, name.str(), GOSSIP_SENDER_USEITEM_USE, GOSSIP_ACTION_INFO_DEF + item->GetGUID().GetCounter());
                             ++counter;
                         }
                     }
@@ -10276,7 +10273,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                     //    ostr << "unknown (" << _ownerGuid << ')';
                     //BotWhisper(ostr.str().c_str(), player);
                     ChatHandler ch(player->GetSession());
-                    ch.PSendSysMessage(LocalizedNpcText(player, BOT_TEXT_HIREFAIL_OWNED).c_str(), me->GetName().c_str());
+                    ch.PSendSysMessage(LocalizedNpcText(player, BOT_TEXT_HIREFAIL_OWNED).c_str(), me->GetName());
                     break;
                 }
 
@@ -10302,13 +10299,13 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                             BotWhisper(LocalizedNpcText(player, BOT_TEXT_HIREDENY_DK), player);
                             break;
                         case BOT_CLASS_SPHYNX:
-                            me->TextEmote((me->GetName() + LocalizedNpcText(player, BOT_TEXT_HIREDENY_SPHYNX)).c_str());
+                            me->TextEmote(me->GetName() + LocalizedNpcText(player, BOT_TEXT_HIREDENY_SPHYNX));
                             break;
                         case BOT_CLASS_ARCHMAGE:
                             BotWhisper(LocalizedNpcText(player, BOT_TEXT_HIREDENY_ARCHMAGE), player);
                             break;
                     }
-                    ch.PSendSysMessage(LocalizedNpcText(player, locStringId).c_str(), me->GetName().c_str());
+                    ch.PSendSysMessage(LocalizedNpcText(player, locStringId).c_str(), me->GetName());
                     break;
                 }
 
@@ -10326,10 +10323,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                 if (SetBotOwner(player))
                 {
                     if (_botclass == BOT_CLASS_SPHYNX)
-                    {
-                        std::string msg1 = me->GetName() + LocalizedNpcText(player, BOT_TEXT_HIRE_EMOTE_SPHYNX) + player->GetName();
-                        me->TextEmote(msg1.c_str());
-                    }
+                        me->TextEmote(me->GetName() + LocalizedNpcText(player, BOT_TEXT_HIRE_EMOTE_SPHYNX) + player->GetName());
                     else
                         BotWhisper(LocalizedNpcText(player, BOT_TEXT_HIRE_SUCCESS), player);
                 }
@@ -10360,7 +10354,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                         else
                             ostr << LocalizedNpcText(player, BOT_TEXT_UNKNOWN) + " (" << _ownerGuid << ')';
                         BotWhisper(ostr.str().c_str(), player);
-                        ch.PSendSysMessage(LocalizedNpcText(player, BOT_TEXT_HIREFAIL_OWNED).c_str(), me->GetName().c_str());
+                        ch.PSendSysMessage(LocalizedNpcText(player, BOT_TEXT_HIREFAIL_OWNED).c_str(), me->GetName());
                         break;
                     }
                     case 2: //max npcbots exceed
@@ -10372,7 +10366,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                         std::string str = LocalizedNpcText(player, BOT_TEXT_HIREFAIL_COST) + " (";
                         str += BotMgr::GetNpcBotCostStr(player->GetLevel(), _botclass);
                         str += ")!";
-                        ch.SendSysMessage(str.c_str());
+                        ch.SendSysMessage(str);
                         player->SendBuyError(BUY_ERR_NOT_ENOUGHT_MONEY, 0, 0, 0);
                         BotSay("...", player);
                         break;
@@ -10407,8 +10401,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                 if (!(i <= BOT_SLOT_RANGED ? _resetEquipment(i, player->GetGUID()) : _unequip(i, player->GetGUID())))
                 {
                     ChatHandler ch(player->GetSession());
-                    ch.PSendSysMessage(LocalizedNpcText(player, BOT_TEXT_CANT_DISMISS_EQUIPMENT).c_str(),
-                        uint32(i), LocalizedNpcText(player, BOT_TEXT_SLOT_MH + i).c_str());
+                    ch.PSendSysMessage(LocalizedNpcText(player, BOT_TEXT_CANT_DISMISS_EQUIPMENT).c_str(), uint32(i), LocalizedNpcText(player, BOT_TEXT_SLOT_MH + i));
                     abort = true;
                     break;
                 }
@@ -10854,7 +10847,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                 {
                     close = false;
                     ChatHandler ch(player->GetSession());
-                    ch.PSendSysMessage("%s's Roles:", me->GetName().c_str());
+                    ch.PSendSysMessage("%s's Roles:", me->GetName());
                     for (uint32 i = BOT_MAX_ROLE; i != BOT_ROLE_NONE; i >>= 1)
                     {
                         if (_roleMask & i)
@@ -10894,7 +10887,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                 {
                     close = false;
                     ChatHandler ch(player->GetSession());
-                    ch.PSendSysMessage("%s's Spells:", me->GetName().c_str());
+                    ch.PSendSysMessage("%s's Spells:", me->GetName());
                     uint32 counter = 0;
                     SpellInfo const* spellInfo;
                     BotSpellMap const& myspells = GetSpellMap();
@@ -10911,7 +10904,7 @@ bool bot_ai::OnGossipSelect(Player* player, Creature* creature/* == me*/, uint32
                             << ", cd: " << itr->second->cooldown << ", base: " << std::max<uint32>(spellInfo->RecoveryTime, spellInfo->CategoryRecoveryTime);
                         if (itr->second->enabled == false)
                             sstr << " (disabled)";
-                        ch.PSendSysMessage("%u) %s", counter, sstr.str().c_str());
+                        ch.PSendSysMessage("%u) %s", counter, sstr.str());
                     }
                     break;
                 }
@@ -12604,7 +12597,7 @@ bool bot_ai::_unequip(uint8 slot, ObjectGuid receiver)
                 std::ostringstream istr;
                 _AddItemLink(master, item, istr, false);
                 ChatHandler ch(master->GetSession());
-                ch.PSendSysMessage(LocalizedNpcText(master, BOT_TEXT_CANT_UNEQUIP_MAILING).c_str(), istr.str().c_str());
+                ch.PSendSysMessage(LocalizedNpcText(master, BOT_TEXT_CANT_UNEQUIP_MAILING).c_str(), istr.str());
 
                 item->SetOwnerGUID(master->GetGUID());
 
