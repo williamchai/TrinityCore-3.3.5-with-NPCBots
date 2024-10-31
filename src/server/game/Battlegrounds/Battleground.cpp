@@ -2185,9 +2185,9 @@ uint32 Battleground::GetPlayerTeam(ObjectGuid guid) const
     return 0;
 }
 
-uint32 Battleground::GetOtherTeam(uint32 teamId) const
+uint32 Battleground::GetOtherTeam(uint32 team) const
 {
-    return teamId ? ((teamId == ALLIANCE) ? HORDE : ALLIANCE) : 0;
+    return team ? ((team == ALLIANCE) ? HORDE : ALLIANCE) : 0;
 }
 
 bool Battleground::IsPlayerInBattleground(ObjectGuid guid) const
