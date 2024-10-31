@@ -676,7 +676,7 @@ public:
         wpc->AddUnitState(UNIT_STATE_EVADE);
         wpc->SetUnitFlag(UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_IMMUNE_TO_PC);
         wpc->SetMaxHealth(wp->GetWPId());
-        wpc->SetFullHealth(); 
+        wpc->SetFullHealth();
         wpc->SetPowerType(POWER_MANA);
         wpc->SetMaxPower(POWER_MANA, wp->GetFlags());
         wpc->SetFullPower(POWER_MANA);
