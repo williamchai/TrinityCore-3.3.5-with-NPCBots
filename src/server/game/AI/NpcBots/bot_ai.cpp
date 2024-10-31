@@ -19251,14 +19251,14 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
                         }
                         if (!has_picker)
                         {
-                            TC_LOG_DEBUG("npcbots", "Bot {} {} team {} goes for a REGEN buff! Cur node: {} {}",
-                                me->GetName(), me->GetEntry(), uint32(myTeamId), curNode->GetWPId(), curNode->GetName());
+                            //TC_LOG_DEBUG("npcbots", "Bot {} {} team {} goes for a REGEN buff! Cur node: {} {}",
+                            //    me->GetName(), me->GetEntry(), uint32(myTeamId), curNode->GetWPId(), curNode->GetName());
                             return lit->wp;
                         }
                     }
                 }
             }
-            if (!me->HasAuraTypeWithValue(SPELL_AURA_MOD_SCALE, 30) && ws->GetFlagPickerGUID(myTeamId) != me->GetGUID())
+            if (!me->HasAuraTypeWithValue(SPELL_AURA_MOD_SCALE, 30) && ws->GetFlagPickerGUID(bg->GetOtherTeamId(myTeamId)) != me->GetGUID())
             {
                 NodeLinkList::const_iterator lit = std::ranges::find_if(links, [=](WanderNodeLink const& wpl) {
                     return wpl.wp->HasFlag(BotWPFlags::BOTWP_FLAG_WS_PICKUP_BERSERKING);
@@ -19279,8 +19279,8 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
                         }
                         if (!has_picker)
                         {
-                            TC_LOG_DEBUG("npcbots", "Bot {} {} team {} goes for a BERSERKING buff! Cur node: {} {}",
-                                me->GetName(), me->GetEntry(), uint32(myTeamId), curNode->GetWPId(), curNode->GetName());
+                            //TC_LOG_DEBUG("npcbots", "Bot {} {} team {} goes for a BERSERKING buff! Cur node: {} {}",
+                            //    me->GetName(), me->GetEntry(), uint32(myTeamId), curNode->GetWPId(), curNode->GetName());
                             return lit->wp;
                         }
                     }
@@ -19337,8 +19337,8 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
                         NodeLinkList alinks = curNode->GetShortestPathLinks(attackNode, links, BotWPLevel::BOTWP_LEVEL_ONE);
                         if (!alinks.empty())
                         {
-                            TC_LOG_DEBUG("npcbots", "Bot {} {} team {} goes to ATTACK (attackers: {})! Cur node: {} {}",
-                                me->GetName(), me->GetEntry(), uint32(myTeamId), uint32(attackers.size()), curNode->GetWPId(), curNode->GetName());
+                            //TC_LOG_DEBUG("npcbots", "Bot {} {} team {} goes to ATTACK (attackers: {})! Cur node: {} {}",
+                            //    me->GetName(), me->GetEntry(), uint32(myTeamId), uint32(attackers.size()), curNode->GetWPId(), curNode->GetName());
                             return alinks.size() == 1u ? alinks.front().wp : Trinity::Containers::SelectRandomWeightedContainerElement(alinks, LinkWeightExtractor())->wp;
                         }
                     }
@@ -19371,8 +19371,8 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
                         NodeLinkList dlinks = curNode->GetShortestPathLinks(defendNode, links);
                         if (!dlinks.empty())
                         {
-                            TC_LOG_DEBUG("npcbots", "Bot {} {} team {} goes to DEFEND (defenders: {})! Cur node: {} {}",
-                                me->GetName(), me->GetEntry(), uint32(myTeamId), uint32(defenders.size()), curNode->GetWPId(), curNode->GetName());
+                            //TC_LOG_DEBUG("npcbots", "Bot {} {} team {} goes to DEFEND (defenders: {})! Cur node: {} {}",
+                            //    me->GetName(), me->GetEntry(), uint32(myTeamId), uint32(defenders.size()), curNode->GetWPId(), curNode->GetName());
                             return dlinks.size() == 1u ? dlinks.front().wp : Trinity::Containers::SelectRandomWeightedContainerElement(dlinks, LinkWeightExtractor())->wp;
                         }
                     }
