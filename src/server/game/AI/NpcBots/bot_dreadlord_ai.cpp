@@ -363,7 +363,7 @@ public:
             if (damage && victim != me && spellInfo && spellInfo->GetFirstRankSpell()->Id == CARRION_SWARM_1)
             {
                 int32 basepoints0 = std::min<uint32>(damage, victim->GetHealth());
-                //TC_LOG_ERROR("entities.unit", "OnBotDamageDealt(drl): {} on {} base val {} ({}),",
+                //BOT_LOG_ERROR("entities.unit", "OnBotDamageDealt(drl): {} on {} base val {} ({}),",
                 //    me->GetName(), victim->GetName(), int32(damage), spellInfo->SpellName[0]);
                 CastSpellExtraArgs args(true);
                 args.AddSpellBP0(basepoints0);
@@ -463,7 +463,7 @@ public:
 
         void SummonedCreatureDespawn(Creature* summon) override
         {
-            //TC_LOG_ERROR("entities.unit", "SummonedCreatureDespawn: {}'s {}", me->GetName(), summon->GetName());
+            //BOT_LOG_ERROR("entities.unit", "SummonedCreatureDespawn: {}'s {}", me->GetName(), summon->GetName());
             if (summon == botPet)
                 botPet = nullptr;
         }

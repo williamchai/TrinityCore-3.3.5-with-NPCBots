@@ -605,7 +605,7 @@ public:
             int32 hppctps = int32(hps * 100.f / float(target->GetMaxHealth()));
             int32 xphploss = xphp > int32(target->GetMaxHealth()) ? 0 : abs(int32(xphp - target->GetMaxHealth()));
             int32 xppct = hp + hppctps * (me->GetLevel() < 60 ? 2.5f : 2.0f);
-            //TC_LOG_ERROR("entities.player", "priest_bot:HealTarget(): {}'s pct {}, hppctps {}, epct {}",
+            //BOT_LOG_ERROR("entities.player", "priest_bot:HealTarget(): {}'s pct {}, hppctps {}, epct {}",
             //    target->GetName(), uint32(hp), int32(hppctps), int32(xppct));
             if (xppct >= 95 && hp >= 25 && !pointed)
                 return false;
@@ -1749,7 +1749,7 @@ public:
 
         void SummonedCreatureDespawn(Creature* summon) override
         {
-            //TC_LOG_ERROR("entities.unit", "SummonedCreatureDespawn: {}'s {}", me->GetName(), summon->GetName());
+            //BOT_LOG_ERROR("entities.unit", "SummonedCreatureDespawn: {}'s {}", me->GetName(), summon->GetName());
             if (summon == botPet)
                 botPet = nullptr;
         }

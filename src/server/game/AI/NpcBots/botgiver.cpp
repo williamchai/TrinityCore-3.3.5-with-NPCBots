@@ -247,7 +247,7 @@ public:
                     if (!bot)
                     {
                         //possible but still
-                        TC_LOG_ERROR("entities.unit", "HIRE_NBOT_ENTRY: bot {} not found!", entry);
+                        BOT_LOG_ERROR("entities.unit", "HIRE_NBOT_ENTRY: bot {} not found!", entry);
                         break;
                     }
 
@@ -255,7 +255,7 @@ public:
                     if (bot->IsInCombat() || !bot->IsAlive() || bot_ai::CCed(bot) ||
                         bot->HasUnitState(UNIT_STATE_CASTING) || ai->GetBotOwnerGuid() || bot->HasAura(BERSERK))
                     {
-                        //TC_LOG_ERROR("entities.unit", "HIRE_NBOT_ENTRY: bot {} ({}) is unavailable all of the sudden!", entry);
+                        //BOT_LOG_ERROR("entities.unit", "HIRE_NBOT_ENTRY: bot {} ({}) is unavailable all of the sudden!", entry);
                         std::ostringstream failMsg;
                         failMsg << bot->GetName() << bot_ai::LocalizedNpcText(player, BOT_TEXT_BOTGIVER__BOT_BUSY);
                         WhisperTo(player, failMsg.str().c_str());

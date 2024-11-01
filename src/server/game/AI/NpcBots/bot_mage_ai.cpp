@@ -810,7 +810,7 @@ public:
 
             if (!targets.empty())
             {
-                Unit* target = targets.size() == 1u ? *targets.begin() : Trinity::Containers::SelectRandomContainerElement(targets);
+                Unit* target = targets.size() == 1u ? *targets.begin() : Bcore::Containers::SelectRandomContainerElement(targets);
                 if (doCast(target, FOCUSMAGIC))
                 {
                     fmCheckTimer = 30000;
@@ -1590,7 +1590,7 @@ public:
 
         void SummonedCreatureDespawn(Creature* summon) override
         {
-            //TC_LOG_ERROR("entities.unit", "SummonedCreatureDespawn: {}'s {}", me->GetName(), summon->GetName());
+            //BOT_LOG_ERROR("entities.unit", "SummonedCreatureDespawn: {}'s {}", me->GetName(), summon->GetName());
             if (summon == botPet)
                 botPet = nullptr;
         }

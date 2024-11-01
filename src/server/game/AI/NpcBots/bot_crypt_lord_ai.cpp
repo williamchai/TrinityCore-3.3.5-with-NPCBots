@@ -204,7 +204,7 @@ public:
                 return false;
             };
             Creature* creature = nullptr;
-            Trinity::CreatureSearcher searcher(me, creature, corpse_pred);
+            Bcore::CreatureSearcher searcher(me, creature, corpse_pred);
             Cell::VisitAllObjects(me, searcher, 30.f);
 
             if (creature)
@@ -355,7 +355,7 @@ public:
 
                 if (chosen_targets)
                 {
-                    Unit* target = Trinity::Containers::SelectRandomContainerElement(*chosen_targets);
+                    Unit* target = Bcore::Containers::SelectRandomContainerElement(*chosen_targets);
                     if (target && doCast(target, GetSpell(IMPALE_1)))
                         return;
                 }

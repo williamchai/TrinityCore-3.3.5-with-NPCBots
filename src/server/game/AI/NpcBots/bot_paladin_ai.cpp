@@ -301,7 +301,7 @@ public:
                 if (tanks.empty())
                     return;
 
-                Unit* target = tanks.size() == 1 ? *tanks.begin() : Trinity::Containers::SelectRandomContainerElement(tanks);
+                Unit* target = tanks.size() == 1 ? *tanks.begin() : Bcore::Containers::SelectRandomContainerElement(tanks);
                 if (doCast(target, GetSpell(BEACON_OF_LIGHT_1)))
                     return;
             }
@@ -447,7 +447,7 @@ public:
                     }
                 }
                 if (!targets.empty())
-                    target = targets.size() == 1u ? *targets.begin() : Trinity::Containers::SelectRandomContainerElement(targets);
+                    target = targets.size() == 1u ? *targets.begin() : Bcore::Containers::SelectRandomContainerElement(targets);
             }
 
             if (target && doCast(target, GetSpell(SACRED_SHIELD_1)))
@@ -1183,7 +1183,7 @@ public:
             if (players.empty())
                 return;
 
-            Unit* target = players.size() == 1 ? players.front() : Trinity::Containers::SelectRandomContainerElement(players);
+            Unit* target = players.size() == 1 ? players.front() : Bcore::Containers::SelectRandomContainerElement(players);
             if (doCast(target, GetSpell(DIVINE_INTERVENTION_1)))
                 return;
         }

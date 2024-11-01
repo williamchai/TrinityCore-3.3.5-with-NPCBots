@@ -253,7 +253,7 @@ public:
             std::list<Unit*> targets;
             GetNearbyTargetsList(targets, 50, 0);
             targets.remove_if(BOTAI_PRED::AuraedTargetExcludeByCaster(BLACK_ARROW_1, me->GetGUID()));
-            if (Unit* target = !targets.empty() ? Trinity::Containers::SelectRandomContainerElement(targets) : nullptr)
+            if (Unit* target = !targets.empty() ? Bcore::Containers::SelectRandomContainerElement(targets) : nullptr)
             {
                 if (doCast(target, GetSpell(BLACK_ARROW_1)))
                     return;
@@ -419,7 +419,7 @@ public:
         {
             if (_minions.size() >= MAX_MINIONS)
             {
-                //TC_LOG_ERROR("entities.player", "bot_dranger_ai::SummonBotPet(): max minions");
+                //BOT_LOG_ERROR("entities.player", "bot_dranger_ai::SummonBotPet(): max minions");
                 Unit* u = nullptr;
                 //try 1: by minimal level
                 uint8 minlevel = me->GetLevel();
@@ -508,7 +508,7 @@ public:
 
         void SummonedCreatureDies(Creature* /*summon*/, Unit* /*killer*/) override
         {
-            //TC_LOG_ERROR("entities.unit", "SummonedCreatureDies: {}'s {}", me->GetName(), summon->GetName());
+            //BOT_LOG_ERROR("entities.unit", "SummonedCreatureDies: {}'s {}", me->GetName(), summon->GetName());
             //if (summon == botPet)
             //    botPet = nullptr;
         }
@@ -516,7 +516,7 @@ public:
         void SummonedCreatureDespawn(Creature* summon) override
         {
             //all darkranger bot pets despawn at death or manually (gossip, teleport, etc.)
-            //TC_LOG_ERROR("entities.unit", "SummonedCreatureDespawn: {}'s {}", me->GetName(), summon->GetName());
+            //BOT_LOG_ERROR("entities.unit", "SummonedCreatureDespawn: {}'s {}", me->GetName(), summon->GetName());
             if (_minions.find(summon) != _minions.end())
                 _minions.erase(summon);
         }

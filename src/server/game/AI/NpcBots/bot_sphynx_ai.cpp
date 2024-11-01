@@ -250,7 +250,7 @@ public:
             if (targets.empty())
                 return;
 
-            Unit* target = Trinity::Containers::SelectRandomContainerElement(targets);
+            Unit* target = Bcore::Containers::SelectRandomContainerElement(targets);
             if (doCast(target, GetSpell(DRAIN_MANA_1)))
                 return;
         }
