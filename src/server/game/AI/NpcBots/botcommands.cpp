@@ -589,7 +589,7 @@ public:
 
         static ChatCommandTable npcbotCommandTable =
         {
-            { "debug",      npcbotDebugCommandTable                                                                                 },
+            //{ "debug",      npcbotDebugCommandTable                                                                                 },
             //{ "toggle",     npcbotToggleCommandTable                                                                                },
             { "set",        npcbotSetCommandTable                                                                                   },
             { "add",        HandleNpcBotAddCommand,                 rbac::RBAC_PERM_COMMAND_NPCBOT_ADD,                Console::No  },
