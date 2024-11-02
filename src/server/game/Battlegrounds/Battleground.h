@@ -511,7 +511,7 @@ class TC_GAME_API Battleground
 
         // since arenas can be AvA or Hvh, we have to get the "temporary" team of a player
         uint32 GetPlayerTeam(ObjectGuid guid) const;
-        uint32 GetOtherTeam(uint32 team) const;
+        uint32 GetOtherTeam(uint32 teamId) const;
         bool IsPlayerInBattleground(ObjectGuid guid) const;
 
         bool ToBeDeleted() const { return m_SetDeleteThis; }
