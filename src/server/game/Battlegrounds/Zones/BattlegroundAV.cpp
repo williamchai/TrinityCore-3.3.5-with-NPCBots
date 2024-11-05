@@ -1310,10 +1310,12 @@ void BattlegroundAV::EventBotAssaultsPoint(Creature* bot, uint32 object)
         }
     }
 
+    AssaultNode(node, team);
+
     //if snowfall gots capped it can be handled like all other graveyards
     if (m_Nodes[node].TotalOwner != AV_NEUTRAL_TEAM)
     {
-        ASSERT(m_Nodes[node].Owner != AV_NEUTRAL_TEAM);
+        ASSERT(owner != AV_NEUTRAL_TEAM);
         if (team == ALLIANCE)
             SpawnBGObject(object-22, RESPAWN_IMMEDIATELY);
         else
@@ -1337,7 +1339,6 @@ void BattlegroundAV::EventBotAssaultsPoint(Creature* bot, uint32 object)
     }
 
     SpawnBGObject(object, RESPAWN_ONE_DAY); //delete old banner
-    AssaultNode(node, team);
     UpdateNodeWorldState(node);
 
     if (StaticNodeInfo const* nodeInfo = GetStaticNodeInfo(node))
