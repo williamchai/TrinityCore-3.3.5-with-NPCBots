@@ -19018,7 +19018,7 @@ WanderNode const* bot_ai::GetNextBGTravelNode() const
                     uint32 cre_type = (mine_idx == AV_NORTH_MINE) ? AV_CPLACE_MINE_N_3 : AV_CPLACE_MINE_S_3;
                     WanderNode const* mineWP = nullptr;
                     WanderNode::DoForAllMapWPs(me->GetMapId(), [=, &mineWP, mindist = 50000.f](WanderNode const* mwp) mutable {
-                        if (av->GetMineOwner(mine_idx) == myTeam || !mine_pred(mwp))
+                        if (!mine_pred(mwp))
                             return;
                         float dist2d = mwp->GetExactDist2d(BG_AV_CreaturePos[cre_type]);
                         if (!mineWP || dist2d < mindist)
