@@ -1021,7 +1021,7 @@ bool Unit::HasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel) cons
         }
 
         //npcbot
-        if (victim->IsNPCBotOrPet() && attacker && victim != attacker && damagetype != NODAMAGE && damagetype != DOT && damage &&
+        if (victim->IsNPCBot() && attacker && victim != attacker && damagetype != NODAMAGE && damagetype != DOT && damage &&
             (attacker->IsNPCBotOrPet() || attacker->IsControlledByPlayer()) &&
             (!spellProto || !(spellProto->HasAttribute(SPELL_ATTR7_NO_PUSHBACK_ON_DAMAGE) || spellProto->HasAttribute(SPELL_ATTR3_TREAT_AS_PERIODIC))))
         {
