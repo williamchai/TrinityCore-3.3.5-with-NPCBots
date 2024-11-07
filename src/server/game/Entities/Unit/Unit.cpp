@@ -5937,6 +5937,11 @@ bool Unit::AttackStop()
     if (Creature* creature = ToCreature())
     {
         creature->SetNoCallAssistance(false);
+
+        //npcbot
+        if (IsNPCBotOrPet())
+            BotMgr::OnBotAttackStop(creature, victim);
+        //end npcbot
     }
 
     SendMeleeAttackStop(victim);

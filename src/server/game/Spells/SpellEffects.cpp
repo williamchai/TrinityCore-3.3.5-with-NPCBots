@@ -3799,6 +3799,10 @@ void Spell::EffectSanctuary()
         // stop all pve combat for players outside dungeons, suppress pvp combat
         unitTarget->CombatStop(false, false);
     }
+    //npcbot
+    else if (unitTarget->IsNPCBotOrPet() && !unitTarget->GetMap()->IsDungeon())
+        unitTarget->CombatStop(false, false);
+    //end npcbot
     else
     {
         // in dungeons (or for nonplayers), reset this unit on all enemies' threat lists
