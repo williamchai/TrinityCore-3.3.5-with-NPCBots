@@ -753,6 +753,21 @@ void WorldSession::HandleBattlemasterJoinArena(WorldPacket& recvData)
 
     GroupJoinBattlegroundResult err = ERR_GROUP_JOIN_BATTLEGROUND_FAIL;
 
+    //npcbot
+    bool have_bots_in_group = false;
+    if (_player->GetGroup() && _player->HaveBot())
+    {
+        for (auto const& mslot : _player->GetGroup()->GetMemberSlots())
+        {
+            if (mslot.guid.IsCreature() && _player->GetBotMgr()->GetBot(mslot.guid))
+            {
+                have_bots_in_group = true;
+                break;
+            }
+        }
+    }
+    //end npcbot
+
     if (!asGroup)
     {
         if (_player->isUsingLfg())
@@ -779,6 +794,16 @@ void WorldSession::HandleBattlemasterJoinArena(WorldPacket& recvData)
         // check if has free queue slots
         if (!_player->HasFreeBattlegroundQueueId())
             return;
+
+        //npcbot: do not allow entering as group if there are bots in group
+        if (have_bots_in_group)
+        {
+            WorldPacket data;
+            sBattlegroundMgr->BuildGroupJoinedBattlegroundPacket(&data, ERR_BATTLEGROUND_JOIN_FAILED);
+            _player->SendDirectMessage(&data);
+            return;
+        }
+        //end npcbot
     }
     else
     {
@@ -803,6 +828,17 @@ void WorldSession::HandleBattlemasterJoinArena(WorldPacket& recvData)
             _player->GetSession()->SendNotInArenaTeamPacket(arenatype);
             return;
         }
+
+        //npcbot: do not allow bots in rated matches
+        if (have_bots_in_group)
+        {
+            WorldPacket data;
+            sBattlegroundMgr->BuildGroupJoinedBattlegroundPacket(&data, ERR_BATTLEGROUND_JOIN_TIMED_OUT);
+            _player->SendDirectMessage(&data);
+            return;
+        }
+        //end npcbot
+
         // get the team rating for queueing
         arenaRating = at->GetRating();
         matchmakerRating = at->GetAverageMMR(grp);
@@ -858,6 +894,22 @@ void WorldSession::HandleBattlemasterJoinArena(WorldPacket& recvData)
             sBattlegroundMgr->BuildGroupJoinedBattlegroundPacket(&data, err);
             member->SendDirectMessage(&data);
             TC_LOG_DEBUG("bg.battleground", "Battleground: player joined queue for arena as group bg queue type {} bg type {}: {}, NAME {}", bgQueueTypeId, bgTypeId, member->GetGUID().ToString(), member->GetName());
+
+            //npcbot: list bots
+            if (!member->HaveBot())
+                continue;
+
+            BotMap const* map = member->GetBotMgr()->GetBotMap();
+            for (BotMap::const_iterator itr = map->begin(); itr != map->end(); ++itr)
+            {
+                Creature const* bot = itr->second;
+                if (!bot || !grp->IsMember(bot->GetGUID()))
+                    continue;
+
+                TC_LOG_DEBUG("bg.battleground", "Battleground: NPCBot joined queue for arena bg queue type {} bg type {}: GUID {}, NAME {} (owner: {})",
+                    bgQueueTypeId, bgTypeId, bot->GetGUID().ToString(), bot->GetName(), member->GetName());
+            }
+            //end npcbot
         }
     }
     else

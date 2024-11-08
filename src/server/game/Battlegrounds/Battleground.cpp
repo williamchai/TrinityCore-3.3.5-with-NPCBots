@@ -1255,7 +1255,7 @@ void Battleground::AddPlayer(Player* player)
 void Battleground::AddBot(Creature* bot)
 {
     ObjectGuid guid = bot->GetGUID();
-    uint32 team = (BotDataMgr::GetTeamIdForFaction(bot->GetFaction()) == TEAM_ALLIANCE) ? ALLIANCE : HORDE;
+    uint32 team = !bot->IsFreeBot() ? bot->GetBotOwner()->GetBGTeam() : (BotDataMgr::GetTeamIdForFaction(bot->GetFaction()) == TEAM_ALLIANCE) ? ALLIANCE : HORDE;
 
     // Add to list/maps
     BattlegroundBot bb;
