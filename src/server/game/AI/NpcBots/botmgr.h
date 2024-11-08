@@ -98,6 +98,7 @@ template<typename U>
 using BotBrackets = std::array<U, BracketsCount>;
 typedef BotBrackets<uint8> LvlBrackets;
 typedef BotBrackets<uint32> PctBrackets;
+typedef BotBrackets<uint32> ItemLvlBrackets;
 
 class TC_GAME_API BotMgr
 {
@@ -173,6 +174,7 @@ class TC_GAME_API BotMgr
         static float GetBotWandererSpeedMod();
         static float GetBotWandererXPGainMod();
         static PctBrackets GetBotWandererLevelBrackets();
+        static uint32 GetBotWandererMaxItemLevel(uint8 level);
         static float GetBotDamageModByClass(uint8 botclass);
         static float GetBotDamageModByLevel(uint8 botlevel);
         static float GetBotHealingModByLevel(uint8 botlevel);
