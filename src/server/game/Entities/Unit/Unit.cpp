@@ -5937,11 +5937,6 @@ bool Unit::AttackStop()
     if (Creature* creature = ToCreature())
     {
         creature->SetNoCallAssistance(false);
-
-        //npcbot
-        if (IsNPCBotOrPet())
-            BotMgr::OnBotAttackStop(creature, victim);
-        //end npcbot
     }
 
     SendMeleeAttackStop(victim);
@@ -6030,6 +6025,10 @@ void Unit::RemoveAllAttackers()
     while (!m_attackers.empty())
     {
         AttackerSet::iterator iter = m_attackers.begin();
+        //npcbot
+        if ((*iter)->IsNPCBotOrPet())
+            BotMgr::OnBotAttackStop((*iter)->ToCreature(), this);
+        //end npcbot
         if (!(*iter)->AttackStop())
         {
             TC_LOG_ERROR("entities.unit", "WORLD: Unit has an attacker that isn't attacking it!");
