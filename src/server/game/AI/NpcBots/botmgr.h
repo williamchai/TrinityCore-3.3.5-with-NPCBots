@@ -33,8 +33,8 @@ enum BattlegroundTypeId : uint32;
 enum CurrentSpellTypes : uint8;
 enum DamageEffectType : uint8;
 
-constexpr size_t TargetIconNamesCacheSize = 8u; // Group.h TARGETICONCOUNT
-constexpr size_t BracketsCount = DEFAULT_MAX_LEVEL / 10 + 1; //0-9, 10-19, 20-29, 30-39, 40-49, 50-59, 60-69, 70-79, 80-83
+constexpr size_t TARGET_ICON_NAMES_CACHE_SIZE = 8u; // Group.h TARGETICONCOUNT
+constexpr size_t BRACKETS_COUNT = DEFAULT_MAX_LEVEL / 10 + 1; //0-9, 10-19, 20-29, 30-39, 40-49, 50-59, 60-69, 70-79, 80-83
 
 enum BotMgrDataFlags : uint32
 {
@@ -95,7 +95,7 @@ enum BotAttackAngle
 
 typedef std::unordered_map<ObjectGuid /*guid*/, Creature* /*bot*/> BotMap;
 template<typename U>
-using BotBrackets = std::array<U, BracketsCount>;
+using BotBrackets = std::array<U, BRACKETS_COUNT>;
 typedef BotBrackets<uint8> LvlBrackets;
 typedef BotBrackets<uint32> PctBrackets;
 typedef BotBrackets<uint32> ItemLvlBrackets;
@@ -363,7 +363,7 @@ class TC_GAME_API BotMgr
 
         AoeSpotsVec _aoespots;
 
-        std::array<std::string, TargetIconNamesCacheSize> _targetIconNamesCache;
+        std::array<std::string, TARGET_ICON_NAMES_CACHE_SIZE> _targetIconNamesCache;
 };
 
 void AddNpcBotScripts();
