@@ -5479,6 +5479,19 @@ void Spell::SummonGuardian(SpellEffectInfo const& spellEffectInfo, uint32 entry,
 
         if (summon->GetEntry() == 27893)
         {
+            //npcbot
+            if (unitCaster->IsCreature())
+            {
+                if (uint32 weapon = unitCaster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID))
+                {
+                    summon->SetDisplayId(11686); // modelid2
+                    summon->SetVirtualItem(0, weapon);
+                }
+                else
+                    summon->SetDisplayId(1126); // modelid1
+            }
+            else
+            //end npcbot
             if (uint32 weapon = unitCaster->GetUInt32Value(PLAYER_VISIBLE_ITEM_16_ENTRYID))
             {
                 summon->SetDisplayId(11686); // modelid2
