@@ -215,6 +215,7 @@ class TC_GAME_API BotMgr
         static void ApplyBotEffectValueMultiplierMods(Unit const* caster, SpellInfo const* spellInfo, SpellEffIndex effIndex, float& multiplier);
         static float GetBotDamageTakenMod(Creature const* bot, bool magic);
         static int32 GetBotStat(Creature const* bot, BotStatMods stat);
+        static int32 GetBotStat(Creature const* bot, Stats stat);
         static float GetBotResilience(Creature const* botOrPet);
 
         void LoadData();
@@ -259,6 +260,7 @@ class TC_GAME_API BotMgr
         static uint8 GetBotPlayerClass(Creature const* bot);
         static uint8 GetBotPlayerRace(Creature const* bot);
         static uint8 GetBotEquipmentClass(uint8 bot_class);
+        static BotStatMods GetBotStatModByUnitStat(Stats stat);
 
         std::string GetTargetIconString(uint8 icon_idx) const;
 

@@ -2297,6 +2297,8 @@ public:
                 return true;
             }
 
+            uint32 found_bots_count = static_cast<uint32>(cBots.size());
+
             for (Creature const* fbot : cBots)
             {
                 base_spell = fbot->GetBotAI()->GetBaseSpell(*spell_name, handler->GetSessionDbcLocale());
@@ -2306,7 +2308,7 @@ public:
 
             if (!base_spell)
             {
-                handler->PSendSysMessage("None of %u found bots have spell named '%s'!", cBots.size(), spell_name->c_str());
+                handler->PSendSysMessage("None of %u found bots have spell named '%s'!", found_bots_count, spell_name->c_str());
                 return true;
             }
 
@@ -2336,7 +2338,7 @@ public:
 
             if (!bot)
             {
-                handler->PSendSysMessage("None of %u found bots can use %s yet!", cBots.size(), spell_name->c_str());
+                handler->PSendSysMessage("None of %u found bots can use %s yet!", found_bots_count, spell_name->c_str());
                 return true;
             }
         }

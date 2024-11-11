@@ -27,6 +27,10 @@
 #include "World.h"
 #include <numeric>
 
+//npcbot
+#include "botmgr.h"
+//end npcbot
+
 inline bool _ModifyUInt32(bool apply, uint32& baseValue, int32& amount)
 {
     // If amount is negative, change sign and value of apply.
@@ -1343,6 +1347,10 @@ bool Guardian::UpdateStats(Stats stat)
                 }
             }
             ownersBonus = float(owner->GetStat(stat)) * mod;
+            //npcbot
+            if (owner->IsNPCBot())
+                ownersBonus = BotMgr::GetBotStat(owner->ToCreature(), stat) * mod;
+            //end npcbot
             value += ownersBonus;
         }
     }
