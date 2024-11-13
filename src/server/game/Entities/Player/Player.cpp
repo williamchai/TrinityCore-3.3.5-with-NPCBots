@@ -19630,6 +19630,7 @@ void Player::SaveToDB(CharacterDatabaseTransaction trans, bool create /* = false
 
     //npcbot: save player-related npcbot data
     BotDataMgr::SaveNpcBotStoredGear(GetGUID(), trans);
+    BotDataMgr::SaveNpcBotItemSets(GetGUID(), trans);
     BotDataMgr::SaveNpcBotMgrData(GetGUID(), trans);
     //end npcbot
 }

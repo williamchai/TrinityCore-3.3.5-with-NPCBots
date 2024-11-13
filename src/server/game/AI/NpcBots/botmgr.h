@@ -149,6 +149,7 @@ class TC_GAME_API BotMgr
         static uint8 GetMaxClassBots();
         static uint8 GetMaxAccountBots();
         static uint32 GetGearBankCapacity();
+        static uint32 GetGearBankEquipmentSetsCount();
         static uint8 GetHealTargetIconFlags();
         static uint8 GetTankTargetIconFlags();
         static uint8 GetOffTankTargetIconFlags();
