@@ -1453,6 +1453,7 @@ void BotMgr::_reviveBot(Creature* bot, WorldLocation* dest)
     bot->Motion_Initialize();
     bot->setDeathState(ALIVE);
     //bot->GetBotAI()->Reset();
+    bot->RefreshCanSwimFlag();
     bot->GetBotAI()->SetShouldUpdateStats();
 
     uint8 restore_factor = (bot->IsWandererBot() || (!bot->GetBotAI()->IAmFree() && bot->GetBotOwner()->InBattleground())) ? 1 : 4;

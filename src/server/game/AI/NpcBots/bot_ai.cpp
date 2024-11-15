@@ -355,8 +355,6 @@ const std::string& bot_ai::LocalizedNpcText(Player const* forPlayer, uint32 text
 
 void bot_ai::InitializeAI()
 {
-    me->RefreshCanSwimFlag();
-
     if (!me->GetSpawnId() && !IsTempBot())
         SetWanderer();
 
@@ -16065,6 +16063,8 @@ void bot_ai::JustEnteredCombat(Unit* u)
 
     ResetChase(u);
 
+    me->RefreshCanSwimFlag();
+
     if (IsLastOrder(BOT_ORDER_PULL, 0, u->GetGUID()))
         CompleteOrder(_orders.front());
 
@@ -18983,6 +18983,9 @@ bool bot_ai::FinishTeleport(bool reset)
         me->BotStopMovement();
         if (reset)
             this->Reset();
+
+        me->RefreshCanSwimFlag();
+
         //bot->SetAI(oldAI);
         //me->IsAIEnabled = true;
         canUpdate = true;

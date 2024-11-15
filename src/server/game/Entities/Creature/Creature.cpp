@@ -2885,6 +2885,11 @@ bool Creature::CanSwim() const
     if (IsPet())
         return true;
 
+    //npcbot
+    if (IsNPCBotOrPet())
+        return true;
+    //end npcbot
+
     return false;
 }
 
