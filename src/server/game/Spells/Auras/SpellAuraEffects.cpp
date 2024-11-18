@@ -5191,7 +5191,7 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster) const
         damage = Unit::SpellCriticalDamageBonus(caster, m_spellInfo, damage, target);
 
     //NpcBot mod: apply bot damage mods
-    if (caster->IsNPCBotOrPet())
+    if (caster && caster->IsNPCBotOrPet())
     {
         SpellNonMeleeDamage damageInfo(caster, target, m_spellInfo->Id, m_spellInfo->GetSchoolMask());
         int32 idamage = damage;
