@@ -2081,7 +2081,7 @@ public:
             return true;
         }
 
-        if (owner->GetBotMgr()->IsPartyInCombat())
+        if (owner->GetBotMgr()->IsPartyInCombat(false))
         {
             handler->SendSysMessage("Can't do that while in combat!");
             return true;
@@ -2576,7 +2576,7 @@ public:
             handler->SetSentErrorMessage(true);
             return false;
         }
-        if (owner->GetBotMgr()->IsPartyInCombat())
+        if (owner->GetBotMgr()->IsPartyInCombat(false))
         {
             handler->GetSession()->SendNotification(LANG_YOU_IN_COMBAT);
             handler->SetSentErrorMessage(true);
@@ -2605,7 +2605,7 @@ public:
             handler->SetSentErrorMessage(true);
             return false;
         }
-        if (owner->GetBotMgr()->IsPartyInCombat() && (owner->IsPvP() || owner->IsFFAPvP()))
+        if (owner->GetBotMgr()->IsPartyInCombat(true))
         {
             handler->GetSession()->SendNotification("You can't do that while in PvP combat");
             handler->SetSentErrorMessage(true);
@@ -2996,7 +2996,7 @@ public:
             handler->SetSentErrorMessage(true);
             return false;
         }
-        if (owner->GetBotMgr()->IsPartyInCombat())
+        if (owner->GetBotMgr()->IsPartyInCombat(false))
         {
             handler->GetSession()->SendNotification(LANG_YOU_IN_COMBAT);
             handler->SetSentErrorMessage(true);
@@ -3066,7 +3066,7 @@ public:
             handler->SetSentErrorMessage(true);
             return false;
         }
-        if (owner->GetBotMgr()->IsPartyInCombat() && (owner->IsPvP() || owner->IsFFAPvP()))
+        if (owner->GetBotMgr()->IsPartyInCombat(true))
         {
             handler->GetSession()->SendNotification("You can't do that while in PvP combat");
             handler->SetSentErrorMessage(true);
