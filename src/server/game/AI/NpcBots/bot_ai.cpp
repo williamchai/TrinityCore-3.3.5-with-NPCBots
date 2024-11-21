@@ -22,6 +22,7 @@
 #include "CharacterCache.h"
 #include "CharacterDatabase.h"
 #include "Chat.h"
+#include "CommonHelpers.h"
 #include "Containers.h"
 #include "DatabaseEnv.h"
 #include "DBCStores.h"
@@ -14653,6 +14654,28 @@ bool bot_ai::IsTank(Unit const* unit) const
             if (gr->isLFGGroup() && sLFGMgr->GetRoles(unit->GetGUID()) & lfg::PLAYER_ROLE_TANK)
                 return true;
         }
+        switch (player->GetClass())
+        {
+            case CLASS_WARRIOR:
+                if (player->GetShield() && Bcore::Helpers::Entity::GetPlayerSpecialization(player) == SPEC_WARRIOR_PROTECTION)
+                    return true;
+                break;
+            case CLASS_PALADIN:
+                if (player->GetShield() && Bcore::Helpers::Entity::GetPlayerSpecialization(player) == SPEC_PALADIN_PROTECTION)
+                    return true;
+                break;
+            case CLASS_DRUID:
+                if ((player->GetShapeshiftForm() == FORM_BEAR || player->GetShapeshiftForm() == FORM_DIREBEAR) &&
+                    Bcore::Helpers::Entity::GetPlayerSpecialization(player) == SPEC_DRUID_FERAL)
+                    return true;
+                break;
+            case CLASS_DEATH_KNIGHT:
+                if (player->GetAuraEffect(SPELL_AURA_MOD_THREAT, SPELLFAMILY_DEATHKNIGHT, 0x8000, 0x0, 0x0) && player->GetRatingBonusValue(CR_DEFENSE_SKILL) > 0.0f)
+                    return true;
+                break;
+            default:
+                break;
+        }
     }
 
     return false;
@@ -14672,6 +14695,28 @@ bool bot_ai::IsOffTank(Unit const* unit) const
         {
             if (gr->GetMemberFlags(unit->GetGUID()) & (MEMBER_FLAG_MAINTANK | MEMBER_FLAG_MAINASSIST))
                 return true;
+        }
+        switch (player->GetClass())
+        {
+            case CLASS_WARRIOR:
+                if (player->GetShield() && Bcore::Helpers::Entity::GetPlayerSpecialization(player) == SPEC_WARRIOR_PROTECTION)
+                    return true;
+                break;
+            case CLASS_PALADIN:
+                if (player->GetShield() && Bcore::Helpers::Entity::GetPlayerSpecialization(player) == SPEC_PALADIN_PROTECTION)
+                    return true;
+                break;
+            case CLASS_DRUID:
+                if ((player->GetShapeshiftForm() == FORM_BEAR || player->GetShapeshiftForm() == FORM_DIREBEAR) &&
+                    Bcore::Helpers::Entity::GetPlayerSpecialization(player) == SPEC_DRUID_FERAL)
+                    return true;
+                break;
+            case CLASS_DEATH_KNIGHT:
+                if (player->GetAuraEffect(SPELL_AURA_MOD_THREAT, SPELLFAMILY_DEATHKNIGHT, 0x8000, 0x0, 0x0) && player->GetRatingBonusValue(CR_DEFENSE_SKILL) > 0.0f)
+                    return true;
+                break;
+            default:
+                break;
         }
     }
 
