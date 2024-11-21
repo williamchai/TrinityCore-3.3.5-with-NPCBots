@@ -14693,7 +14693,7 @@ bool bot_ai::IsOffTank(Unit const* unit) const
     {
         if (Group const* gr = player->GetGroup())
         {
-            if (gr->GetMemberFlags(unit->GetGUID()) & (MEMBER_FLAG_MAINTANK | MEMBER_FLAG_MAINASSIST))
+            if (gr->GetMemberFlags(unit->GetGUID()) & MEMBER_FLAG_MAINASSIST)
                 return true;
         }
         switch (player->GetClass())
