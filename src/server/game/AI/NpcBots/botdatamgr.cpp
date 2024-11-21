@@ -953,7 +953,7 @@ void BotDataMgr::LoadNpcBots(bool spawn)
 
     std::list<uint32> invalid_ids;
     for (CreatureDataContainer::value_type const& kv : sObjectMgr->GetAllCreatureData())
-        if (kv.second.id > BOT_ENTRY_BEGIN && sObjectMgr->GetCreatureTemplate(kv.second.id)->IsNPCBot() && std::ranges::find(entryList, kv.second.id) == entryList.cend())
+        if (kv.second.id >= BOT_ENTRY_BEGIN && sObjectMgr->GetCreatureTemplate(kv.second.id)->IsNPCBot() && std::ranges::find(entryList, kv.second.id) == entryList.cend())
             invalid_ids.push_back(kv.second.id);
 
     if (!invalid_ids.empty())
