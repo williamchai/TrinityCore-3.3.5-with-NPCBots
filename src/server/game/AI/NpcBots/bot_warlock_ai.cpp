@@ -227,6 +227,8 @@ public:
         {
             _botclass = BOT_CLASS_WARLOCK;
 
+            myPetType = 0;
+
             InitUnitFlags();
         }
 
@@ -1884,13 +1886,13 @@ public:
                 default:
                     break;
             }
+
+            bot_ai::SetAIMiscValue(data, value);
         }
 
         void Reset() override
         {
             UnsummonAll(false);
-
-            myPetType = 0;
 
             fearTimer = 0;
             banishTimer = 0;

@@ -262,8 +262,10 @@ class bot_ai : public CreatureAI
         bool IsValidTransmog(uint8 slot, ItemTemplate const* source) const;
         virtual bool CanSeeEveryone() const { return false; }
         virtual float GetBotArmorPenetrationCoef() const { return armor_pen; }
+        void InitMiscValues();
+        void ResetAllMiscValues();
         virtual uint32 GetAIMiscValue(uint32 /*data*/) const { return 0; }
-        virtual void SetAIMiscValue(uint32 /*data*/, uint32 /*value*/) {}
+        virtual void SetAIMiscValue(uint32 data, uint32 value);
         uint8 GetBotComboPoints() const;
         float GetBotAmmoDPS() const;
 
@@ -713,6 +715,7 @@ class bot_ai : public CreatureAI
         uint32 _groupUpdateTimer;
         //save timers
         uint32 _saveDisabledSpellsTimer;
+        uint32 _saveMiscValuesTimer;
 
         uint32 _lastZoneId, _lastAreaId, _lastWMOAreaId;
         uint32 _selfrez_spell_id;
@@ -754,6 +757,7 @@ class bot_ai : public CreatureAI
 
         //save flags
         bool _saveDisabledSpells;
+        bool _saveMiscValues;
 
         TeleportHomeEvent* teleHomeEvent;
         TeleportFinishEvent* teleFinishEvent;
