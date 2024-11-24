@@ -627,7 +627,8 @@ public:
         {
             for (Unit* attacker : target->getAttackers())
             {
-                if (attacker->CanHaveThreatList() && attacker->getAttackers().size() >= 3 && target->GetDistance(attacker) < 15)
+                if (attacker->CanHaveThreatList() && attacker->GetThreatManager().GetThreatListSize() >= 3 &&
+                    attacker->GetThreatManager().GetThreat(target) > target->GetMaxHealth() / 4.f && target->GetDistance(attacker) < 15)
                 {
                     if (doCast(target, GetSpell(HAND_OF_SALVATION_1)))
                         return true;
