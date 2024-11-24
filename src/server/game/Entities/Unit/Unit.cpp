@@ -2807,7 +2807,7 @@ float Unit::GetUnitDodgeChance(WeaponAttackType attType, Unit const* victim) con
     //npcbot - manual expertise instead of auras
     else if (IsNPCBot())
     {
-        chance -= ToCreature()->GetCreatureExpertise() * 25;
+        chance -= ToCreature()->GetCreatureExpertise() / 4.0f;
         chance -= GetTotalAuraModifier(SPELL_AURA_MOD_EXPERTISE) / 4.0f;
     }
     //end npcbot
@@ -2868,7 +2868,7 @@ float Unit::GetUnitParryChance(WeaponAttackType attType, Unit const* victim) con
     //npcbot - manual expertise instead of auras
     else if (IsNPCBot())
     {
-        chance -= ToCreature()->GetCreatureExpertise() * 25;
+        chance -= ToCreature()->GetCreatureExpertise() / 4.0f;
         chance -= GetTotalAuraModifier(SPELL_AURA_MOD_EXPERTISE) / 4.0f;
     }
     //end npcbot
