@@ -28,6 +28,8 @@ enum MeleeHitOutcome : uint8;
 struct CleanDamage;
 struct CalcDamageInfo;
 struct ItemTemplate;
+struct NpcBotData;
+struct NpcBotExtras;
 struct PlayerClassLevelInfo;
 struct SpellNonMeleeDamage;
 
@@ -52,6 +54,9 @@ class bot_ai : public CreatureAI
 
         void InitializeAI() override;
         //void Reset() override { }
+
+        NpcBotData const* GetBotData() const { return _botData; }
+        NpcBotExtras const* GetBotExtras() const { return _botExtras; }
 
         void JustDied(Unit*) override;
         void KilledUnit(Unit* u) override;
@@ -685,6 +690,9 @@ class bot_ai : public CreatureAI
         float _getItemGearStatScore(ItemTemplate const* iproto, uint8 forslot, Item const* item) const;
 
         void _saveStats();
+
+        NpcBotData* const _botData;
+        NpcBotExtras* const _botExtras;
 
         PlayerClassLevelInfo* _classinfo;
         SpellInfo const* m_botSpellInfo;
