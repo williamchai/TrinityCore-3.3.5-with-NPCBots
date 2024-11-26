@@ -241,6 +241,8 @@ class TC_GAME_API BotMgr
         static uint8 GetMaxNpcBots(uint8 level);
         static uint8 GetNpcBotXpReduction();
         static uint8 GetNpcBotXpReductionStartingNumber();
+        static bool GetNpcBotXpReductionBlizzlikeEnabled();
+        static bool GetNpcBotXpReductionBlizzlikeGroupOnly();
         static uint8 GetNpcBotMountLevel60();
         static uint8 GetNpcBotMountLevel100();
         static int32 GetBotInfoPacketsLimit();
