@@ -299,7 +299,7 @@ bot_ai::bot_ai(Creature* creature) : CreatureAI(creature),
 }
 bot_ai::~bot_ai()
 {
-    BOT_LOG_INFO("scripts", "bot_ai destructor call for {} ({})", me->GetName(), me->GetEntry());
+    BOT_LOG_INFO("npcbots", "bot_ai destructor call for {} ({})", me->GetName(), me->GetEntry());
 
     while (!_spells.empty())
     {
