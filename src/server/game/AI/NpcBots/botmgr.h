@@ -310,6 +310,7 @@ class TC_GAME_API BotMgr
         bool GetBotAllowCombatPositioning() const;
         void SetBotAllowCombatPositioning(bool allow);
 
+        bool GetBotsHidden() const;
         void SetBotsHidden(bool hidden);
 
         uint32 GetEngageDelayDPS() const;
