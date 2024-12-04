@@ -3072,6 +3072,12 @@ public:
             handler->SetSentErrorMessage(true);
             return false;
         }
+        if (owner->GetBotMgr()->GetBotsHidden())
+        {
+            handler->GetSession()->SendNotification("You can't do that while bots are hidden");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
         if (owner->GetBotMgr()->IsPartyInCombat(true))
         {
             handler->GetSession()->SendNotification("You can't do that while in PvP combat");
