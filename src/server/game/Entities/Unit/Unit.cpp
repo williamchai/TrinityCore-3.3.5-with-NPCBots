@@ -12580,6 +12580,8 @@ bool Unit::IsInPartyWith(Unit const* unit) const
         return (pla->GetGroup() && pla->GetGroup() == bot->GetBotGroup()) ? pla->GetSubGroup() == bot->GetSubGroup() : !!pla->GetBotMgr()->GetBot(bot->GetGUID());
     if (u1->IsNPCBot() && u2->IsNPCBot() && u1->ToCreature()->GetBotGroup() && u1->ToCreature()->GetBotGroup() == u2->ToCreature()->GetBotGroup())
         return u1->ToCreature()->GetSubGroup() == u2->ToCreature()->GetSubGroup();
+    if (u1->IsNPCBot() && u2->IsNPCBot() && u1->IsFFAPvP() && u2->IsFFAPvP())
+        return false;
     //end npcbot
 
     return u1->GetTypeId() == TYPEID_UNIT && u2->GetTypeId() == TYPEID_UNIT && u1->GetFaction() == u2->GetFaction();
@@ -12607,6 +12609,8 @@ bool Unit::IsInRaidWith(Unit const* unit) const
         return (pla->GetGroup() && pla->GetGroup() == bot->GetBotGroup()) ? true : !!pla->GetBotMgr()->GetBot(bot->GetGUID());
     if (u1->IsNPCBot() && u2->IsNPCBot() && u1->ToCreature()->GetBotGroup())
         return  u1->ToCreature()->GetBotGroup() == u2->ToCreature()->GetBotGroup();
+    if (u1->IsNPCBot() && u2->IsNPCBot() && u1->IsFFAPvP() && u2->IsFFAPvP())
+        return false;
     //end npcbot
 
     return u1->GetTypeId() == TYPEID_UNIT && u2->GetTypeId() == TYPEID_UNIT && u1->GetFaction() == u2->GetFaction();
