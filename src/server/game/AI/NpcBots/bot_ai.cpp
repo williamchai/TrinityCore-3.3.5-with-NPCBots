@@ -17959,7 +17959,7 @@ bool bot_ai::GlobalUpdate(uint32 diff)
             rent_money = std::max<uint32>(rent_money, 1);
             if (!master->HasEnoughMoney(rent_money))
             {
-                master->GetSession()->SendNotification(LocalizedNpcText(master, BOT_TEXT_HIREFAIL_COST).c_str());
+                master->GetSession()->SendNotification("%s", LocalizedNpcText(master, BOT_TEXT_HIREFAIL_COST).c_str());
                 master->GetBotMgr()->RemoveBot(me->GetGUID(), BOT_REMOVE_UNAFFORD);
                 return false;
             }
