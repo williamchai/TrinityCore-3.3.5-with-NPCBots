@@ -11891,7 +11891,7 @@ uint32 bot_ai::_getLootQualityThreshold() const
 {
     uint32 lootThreshold;
     Group const* gr = master->GetGroup();
-    if (!gr)
+    if (!gr || gr->GetFirstMember()->next() == nullptr)
         lootThreshold = uint32(MAX_ITEM_QUALITY);
     else
     {
